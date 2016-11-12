@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="183.0" prefWidth="373.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chatclient.FXMLLogInDocumentController">
+   <children>
+      <Label layoutX="53.0" layoutY="35.0" text="Handle:" />
+      <Label layoutX="65.0" layoutY="88.0" text="Class:" />
+      <TextField fx:id="handle" layoutX="116.0" layoutY="30.0" prefHeight="26.0" prefWidth="214.0" />
+      <ComboBox fx:id="classes" layoutX="116.0" layoutY="83.0" prefHeight="26.0" prefWidth="214.0" />
+      <ButtonBar layoutX="131.0" layoutY="129.0" prefHeight="40.0" prefWidth="200.0">
+        <buttons>
+            <Button layoutX="125.0" layoutY="17.0" mnemonicParsing="false" onAction="#quit" text="Cancel" />
+          <Button mnemonicParsing="false" onAction="#enterGame" text="OK" />
+        </buttons>
+      </ButtonBar>
+   </children>
+</AnchorPane>
