@@ -25,6 +25,7 @@ public class FXMLLogInDocumentController implements Initializable {
     private ComboBox<String> classes;
     @FXML
     private TextField handle;
+    private WorldPane world;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -41,11 +42,15 @@ public class FXMLLogInDocumentController implements Initializable {
         classSelect();
     }
 
-    public void classSelect (){
+    public void classSelect() {
         classes.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             selectedClass = newValue;
             System.out.println("Selected Class: " + selectedClass);
         });
+    }
+
+    public void setWorld(WorldPane world) {
+        this.world = world;
     }
 
     public void enterGame(ActionEvent event) {
@@ -53,10 +58,10 @@ public class FXMLLogInDocumentController implements Initializable {
         System.out.println(handle.getText());
         gateway.sendClass(selectedClass);
         System.out.println(selectedClass);
-        //new Thread(new TranscriptCheck(gateway,textarea,handle.getText())).start();
-        //new Thread(new TranscriptOther(gateway,textarea)).start();
+        new Thread(new GameCheck(gateway, world, handle.getText())).start();
         handle.getScene().getWindow().hide();
     }
+
     private void getSelected() {
         selectedClass = this.classes.getValue();
     }

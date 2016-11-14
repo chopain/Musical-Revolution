@@ -1,10 +1,7 @@
 package Revolution;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TextArea;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,8 +9,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static Revolution.ClassType.SEND_HANDLE;
-import static Revolution.ClassType.SEND_MOVE;
+import static Revolution.ClassType.*;
 
 public class CommemeismGateway {
 
@@ -47,7 +43,7 @@ public class CommemeismGateway {
     // Start the chat by sending in the user's handle.
     public void sendHandle(String handle) {
         lock.lock();
-        outputToServer.println();
+        outputToServer.println(SEND_HANDLE);
         outputToServer.println(handle);
         outputToServer.flush();
         lock.unlock();
@@ -56,7 +52,7 @@ public class CommemeismGateway {
     // Start the chat by sending in the user's handle.
     public void sendClass(String type) {
         lock.lock();
-        outputToServer.println(SEND_HANDLE);
+        outputToServer.println(SEND_CLASS);
         outputToServer.println(type);
         outputToServer.flush();
         lock.unlock();
@@ -72,25 +68,29 @@ public class CommemeismGateway {
         lock.unlock();
     }
 
-    //Get list of players
-    public ObservableList<String> getPlayers() {
+    public int getMoveCount() {
         lock.lock();
-        ObservableList<String> rooms = FXCollections.observableArrayList();
-        outputToServer.println();
+        outputToServer.println(GET_MOVE_COUNT);
         outputToServer.flush();
+        int count = 0;
         try {
-            int roomNums = Integer.parseInt(inputFromServer.readLine());
-            for (int i = 0; i < roomNums; i++) {
-                rooms.add(inputFromServer.readLine());
-            }
-        } catch (IOException ex) {
-            //Platform.runLater(() -> textArea.appendText("Error in getComment: " + ex.toString() + "\n"));
+            count = Integer.parseInt(inputFromServer.readLine());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         lock.unlock();
-        return rooms;
+        return count;
     }
 
+    //Get updated position
+    public void getMoves() {
+        lock.lock();
+        outputToServer.println(GET_MOVE);
 
+        outputToServer.flush();
+        lock.unlock();
+
+    }
 
 
     public ObservableList<String> getClassTypes() {
