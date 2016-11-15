@@ -11,7 +11,7 @@ public class propagandist {
     public propagandist(String type, String name) {
         this.classType = type;
         this.user = name;
-        this.face.setImage(new Image(type + ".png"));
+        this.face.setImage(new Image("plebian.png"));
     }
 
     public ImageView getFace() {

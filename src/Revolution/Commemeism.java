@@ -31,7 +31,7 @@ public class Commemeism extends Application {
 
     @Override
     public void start(Stage world) throws Exception {
-        WorldPane root = new WorldPane();
+        WorldPane root = new WorldPane(objects, someShapes);
         TreeMap<String, propagandist> playerObjects = new TreeMap<>();
         CommemeismGateway gateway = new CommemeismGateway(root);
         ImageView loading = new ImageView(new Image("gamebg_load.jpg", 1400, 0, true, true));
@@ -46,7 +46,7 @@ public class Commemeism extends Application {
         dialog.initStyle(StageStyle.UTILITY);
         FXMLLogInDocumentController controller = loader.getController();
         controller.setGateway(gateway);
-        controller.setWorld(root, players, plebians, objects,someShapes, playerObjects);
+        controller.setWorld(root, players, plebians, objects, someShapes, playerObjects);
         dialog.setOnCloseRequest(event -> System.exit(0));
         dialog.show();
 
@@ -92,12 +92,14 @@ class PlebianCheck implements Runnable {
     ReentrantLock lock = new ReentrantLock();
     ImageView background = new ImageView(new Image("gamebg.jpg", 1400, 0, true, true));
     int N = 0;
+    ScorePane scorePane = new ScorePane();
 
     public PlebianCheck(CommemeismGateway gate, List<plebian> plebs, WorldPane w, List<ImageView> plebImages) {
         this.gateway = gate;
         this.plebians = plebs;
         this.plebs = plebImages;
         this.world = w;
+        scorePane.setScores(222, 300, 24);
     }
 
     @Override
@@ -107,7 +109,7 @@ class PlebianCheck implements Runnable {
             if (gateway.getPlebianCount() > N) {
                 try {
                     gateway.getPlebian(N, plebians, plebs);
-                    world.setShapes(background, propagandists, plebs, bases, borders);
+                    Platform.runLater(() -> world.setShapes(propagandists, plebs, scorePane));
                     System.out.println("plebian added");
                     N++;
                 } catch (IOException e) {
@@ -133,11 +135,13 @@ class PlayerCheck implements Runnable {
     List<ImageView> bases;
     List<Shape> borders;
     WorldPane world;
+    ImageView bg = new ImageView(new Image("bg.jpg", 1400, 0, true, false));
     ReentrantLock lock = new ReentrantLock();
     int N = 0;
+    ScorePane scorePane = new ScorePane();
 
-    public PlayerCheck(CommemeismGateway gate, TreeMap<String, propagandist> players, WorldPane w, List<ImageView> playerImages,
-                       List<ImageView> plebs, List<plebian> plebians, List<ImageView> bases, List<Shape> borders) {
+    public PlayerCheck(CommemeismGateway gate, TreeMap<String, propagandist> players, WorldPane w, List<ImageView> playerImages
+                       /*List<ImageView> plebs, List<plebian> plebians, List<ImageView> bases, List<Shape> borders*/) {
         this.gateway = gate;
         this.players = players;
         this.propagandists = playerImages;
@@ -146,12 +150,8 @@ class PlayerCheck implements Runnable {
         this.plebs = plebs;
         this.bases = bases;
         this.borders = borders;
-    }
 
-    public void setWorld(WorldPane world, List<ImageView> p, TreeMap<String, propagandist> players) {
-        this.world = world;
-        this.propagandists = p;
-        this.players = players;
+        scorePane.setScores(222, 300, 24);
 
     }
 
@@ -161,9 +161,11 @@ class PlayerCheck implements Runnable {
             lock.lock();
             if (gateway.getPlayerCount() > N) {
                 try {
-                    players.put(gateway.getPlayerHandle(N), new propagandist(gateway.getPlayerHandle(N), gateway.getPlayerType(N)));
+                    String username = gateway.getPlayerHandle(N);
+                    players.put(username, new propagandist(username, gateway.getPlayerType(N)));
                     propagandists.add(players.get(gateway.getPlayerHandle(N)).getFace());
-                    //world.setShapes(propagandists);
+                    gateway.getPlayerPos(N, players.get(username));
+                    Platform.runLater(() -> world.setShapes(propagandists, plebs, scorePane));
                     System.out.println("player added");
                 } catch (IOException e) {
                     e.printStackTrace();

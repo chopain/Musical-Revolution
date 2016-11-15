@@ -19,9 +19,7 @@ import people.propagandist;
 
 
 import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.TreeMap;
+import java.util.*;
 
 public class FXMLLogInDocumentController implements Initializable {
     private CommemeismGateway gateway;
@@ -50,6 +48,7 @@ public class FXMLLogInDocumentController implements Initializable {
     public void setGateway(CommemeismGateway gateway) {
         this.gateway = gateway;
         classes.setItems(gateway.getClassTypes());
+        classes.setValue("Communist");
         classSelect();
     }
 
@@ -75,11 +74,14 @@ public class FXMLLogInDocumentController implements Initializable {
         gateway.sendHandle(handle.getText());
         System.out.println(handle.getText());
         gateway.sendClass(selectedClass);
-        ImageView background = new ImageView(new Image("gamebg.jpg", 1400, 0, true, true));
-        world.setShapes(background, propagandists, plebs, bases, borders);
+        List<plebian> plebs = Collections.synchronizedList(new ArrayList<plebian>());
+        ScorePane scorePane = new ScorePane();
+        scorePane.setScores(222, 300, 24);
+        //world.setShapes(background, propagandists, plebs, scorePane);
         System.out.println(selectedClass);
         new Thread(new GameCheck(gateway, world, handle.getText(), players, propagandists)).start();
-        //new Thread(new PlayerCheck(gateway, players, world, propagandists)).start();
+        new Thread(new PlayerCheck(gateway, players, world, propagandists)).start();
+        //new Thread(new PlebianCheck(gateway, plebs, world, propagandists)).start();
         handle.getScene().getWindow().hide();
     }
 

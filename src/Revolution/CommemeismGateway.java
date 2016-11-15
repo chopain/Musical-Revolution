@@ -146,6 +146,18 @@ public class CommemeismGateway {
         return type;
     }
 
+    public void getPlayerPos(int n, propagandist p) throws IOException {
+        lock.lock();
+        outputToServer.println(GET_PLAYER_POSITION);
+        outputToServer.println(n);
+        outputToServer.flush();
+        double newX = Double.parseDouble(inputFromServer.readLine());
+        double newY = Double.parseDouble(inputFromServer.readLine());
+        p.move(newX, newY);
+        lock.unlock();
+    }
+
+
     public int getPlebianCount() {
         lock.lock();
         outputToServer.println(GET_PLEBIAN_COUNT);

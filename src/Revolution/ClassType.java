@@ -12,7 +12,7 @@ public interface ClassType {
     public static int GET_PLAYER_COUNT = 12;
     public static int GET_PLAYER = 13;
     public static int GET_PLAYER_TYPE = 14;
-    public static int GET_PLEBIAN_COUNT= 15;
+    public static int GET_PLEBIAN_COUNT = 15;
     public static int GET_PLEBIAN = 16;
-
+    public static int GET_PLAYER_POSITION = 17;
 }

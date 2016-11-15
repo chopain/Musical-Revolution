@@ -1,5 +1,6 @@
 package Revolution;
 
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Shape;
@@ -7,20 +8,27 @@ import javafx.scene.shape.Shape;
 import java.util.List;
 
 public class WorldPane extends Pane {
-    public WorldPane() {
+    private List<ImageView> bases;
+    private List<Shape> borders;
+    private static ImageView background = new ImageView(new Image("gamebg.jpg", 1400, 0, true, true));
+
+    public WorldPane(List<ImageView> base, List<Shape> border) {
+        this.bases = base;
+        this.borders = border;
     }
 
-    public void setShapes(ImageView bg, List<ImageView> players, List<ImageView> plebians, List<ImageView> bases, List<Shape> borders) {
+    public void setShapes(List<ImageView> players, List<ImageView> plebians, ScorePane scores) {
         this.getChildren().clear();
-        this.getChildren().add(bg);
+        this.getChildren().add(background);
         this.getChildren().addAll(players);
         this.getChildren().addAll(plebians);
+        this.getChildren().add(scores);
         this.getChildren().addAll(bases);
         this.getChildren().addAll(borders);
 
     }
 
-    public void setLoading(ImageView bg){
+    public void setLoading(ImageView bg) {
         this.getChildren().clear();
         this.getChildren().add(bg);
     }
