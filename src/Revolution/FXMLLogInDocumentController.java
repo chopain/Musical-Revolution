@@ -11,15 +11,18 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import people.propagandist;
 
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 
 public class FXMLLogInDocumentController implements Initializable {
     private CommemeismGateway gateway;
     private TextArea textarea;
     private String selectedClass;
+    private TreeMap<String, propagandist> players;
 
     @FXML
     private ComboBox<String> classes;
@@ -35,9 +38,8 @@ public class FXMLLogInDocumentController implements Initializable {
         System.exit(0);
     }
 
-    public void setGateway(CommemeismGateway gateway, TextArea textArea) {
+    public void setGateway(CommemeismGateway gateway) {
         this.gateway = gateway;
-        this.textarea = textArea;
         classes.setItems(gateway.getClassTypes());
         classSelect();
     }
@@ -53,12 +55,17 @@ public class FXMLLogInDocumentController implements Initializable {
         this.world = world;
     }
 
+    public void setMap(TreeMap<String, propagandist> players) {
+        this.players = players;
+    }
+
+
     public void enterGame(ActionEvent event) {
         gateway.sendHandle(handle.getText());
         System.out.println(handle.getText());
         gateway.sendClass(selectedClass);
         System.out.println(selectedClass);
-        new Thread(new GameCheck(gateway, world, handle.getText())).start();
+        new Thread(new GameCheck(gateway, world, handle.getText(), players)).start();
         handle.getScene().getWindow().hide();
     }
 

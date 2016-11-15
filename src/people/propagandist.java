@@ -12,23 +12,20 @@ public class propagandist {
     private String classType;
     private String user;
     private ImageView face = new ImageView();
-    private int x;
-    private int y;
 
     public propagandist(String type, String name) {
         this.classType = type;
         this.user = name;
-        this.face.setImage(new Image("file:res/" + type + ".png"));
-        move();
+        this.face.setImage(new Image("file:res:" + type + ".png"));
     }
 
     public ImageView getFace() {
         return face;
     }
 
-    public void move(){
-        face.setLayoutX(300);
-        face.setLayoutY(100);
+    public void move(double x, double y){
+        face.setLayoutX(x);
+        face.setLayoutY(y);
     }
 
     public void spreadPropaganda(String user, int move){

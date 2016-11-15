@@ -2,14 +2,18 @@ package Revolution;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import people.propagandist;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static Revolution.ClassType.*;
+import static Revolution.MoveType.*;
 
 public class CommemeismGateway {
 
@@ -83,13 +87,16 @@ public class CommemeismGateway {
     }
 
     //Get updated position
-    public void getMoves() {
+    public void getMoves(int n, TreeMap<String, propagandist> player) throws IOException {
         lock.lock();
         outputToServer.println(GET_MOVE);
-
+        outputToServer.println(n);
         outputToServer.flush();
+        String user = inputFromServer.readLine();
+        double newX = Double.parseDouble(inputFromServer.readLine());
+        double newY = Double.parseDouble(inputFromServer.readLine());
+        player.get(user).move(newX, newY);
         lock.unlock();
-
     }
 
 
@@ -99,5 +106,47 @@ public class CommemeismGateway {
         types.add("Proletariat");
         types.add("Communist");
         return types;
+    }
+
+
+    public int getPlayerCount() {
+        lock.lock();
+        outputToServer.println(GET_PLAYER_COUNT);
+        outputToServer.flush();
+        int count = 0;
+        try {
+            count = Integer.parseInt(inputFromServer.readLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        lock.unlock();
+        return count;
+    }
+
+    public String getPlayerHandle(int n) throws IOException {
+        lock.lock();
+        outputToServer.println(GET_PLAYER);
+        outputToServer.println(n);
+        outputToServer.flush();
+        String handle = inputFromServer.readLine();
+        lock.unlock();
+        return handle;
+    }
+
+    public String getPlayerType(int n) throws IOException {
+        lock.lock();
+        outputToServer.println(GET_PLAYER_TYPE);
+        outputToServer.println(n);
+        outputToServer.flush();
+        String type= inputFromServer.readLine();
+        lock.unlock();
+        return type;
+    }
+
+    public void throwObject(){
+        lock.lock();
+        outputToServer.println(THROW);
+        outputToServer.flush();
+        lock.unlock();
     }
 }

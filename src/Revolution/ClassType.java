@@ -9,5 +9,7 @@ public interface ClassType {
     public static int GET_MOVE_COUNT = 3;
     public static int GET_MOVE = 4;
     public static int SEND_MOVE = 5;
-    public static int GET_STATUS = 6;
+    public static int GET_PLAYER_COUNT = 12;
+    public static int GET_PLAYER = 13;
+    public static int GET_PLAYER_TYPE = 14;
 }
