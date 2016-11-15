@@ -2,6 +2,8 @@ package Revolution;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.image.ImageView;
+import people.plebian;
 import people.propagandist;
 
 import java.io.BufferedReader;
@@ -9,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -138,12 +141,40 @@ public class CommemeismGateway {
         outputToServer.println(GET_PLAYER_TYPE);
         outputToServer.println(n);
         outputToServer.flush();
-        String type= inputFromServer.readLine();
+        String type = inputFromServer.readLine();
         lock.unlock();
         return type;
     }
 
-    public void throwObject(){
+    public int getPlebianCount() {
+        lock.lock();
+        outputToServer.println(GET_PLEBIAN_COUNT);
+        outputToServer.flush();
+        int count = 0;
+        try {
+            count = Integer.parseInt(inputFromServer.readLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        lock.unlock();
+        return count;
+    }
+
+    public void getPlebian(int n, List<plebian> plebs, List<ImageView> plebImages) throws IOException {
+        lock.lock();
+        outputToServer.println(GET_PLEBIAN);
+        outputToServer.println(n);
+        outputToServer.flush();
+        plebs.add(n, new plebian());
+        double newX = Double.parseDouble(inputFromServer.readLine());
+        double newY = Double.parseDouble(inputFromServer.readLine());
+        plebs.get(n).move(newX, newY);
+        plebImages.add(plebs.get(n).getFace());
+        lock.unlock();
+
+    }
+
+    public void throwObject() {
         lock.lock();
         outputToServer.println(THROW);
         outputToServer.flush();
