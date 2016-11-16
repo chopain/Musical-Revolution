@@ -67,6 +67,7 @@ public class FXMLLogInDocumentController implements Initializable {
         gateway.sendHandle(handle.getText());
         System.out.println(handle.getText());
         gateway.sendClass(selectedClass);
+
         System.out.println(selectedClass);
         ScorePane score = new ScorePane();
         List<ImageView> propaganda = Collections.synchronizedList(new ArrayList<ImageView>());
@@ -75,6 +76,7 @@ public class FXMLLogInDocumentController implements Initializable {
         new Thread(new PlayerCheck(gateway, players, world, propagandists, plebs, plebians, propaganda, score)).start();
         new Thread(new PlebianCheck(gateway, plebians, world, propagandists, plebs, propaganda, score)).start();
         new Thread(new PropagandaCheck(gateway, plebians, world, propagandists, plebs, propaganda, propagandaObjects, score)).start();
+        new Thread(new ScoreCheck(gateway, world, plebs, propagandists, propaganda, score)).start();
         handle.getScene().getWindow().hide();
         //}
     }

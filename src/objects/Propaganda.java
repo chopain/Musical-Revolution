@@ -3,10 +3,6 @@ package objects;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import Revolution.MoveType;
-import physics.Point;
-import physics.Ray;
-import physics.Vector;
-
 
 public class Propaganda implements MoveType {
     private ImageView i = new ImageView();
@@ -23,7 +19,11 @@ public class Propaganda implements MoveType {
     }
 
     public void updateShape(double x, double y) {
+        /*if (x == -1.0 && y == -1.0) {
+
+        } else {*/
         i.setLayoutX(x);
         i.setLayoutY(y);
+        //}
     }
 }

@@ -159,17 +159,6 @@ public class CommemeismGateway {
         plebImages.add(plebs.get(n).getFace());
     }
 
-    public synchronized void removePlebian(int n, List<plebian> plebs, List<ImageView> plebImages) throws IOException {
-        outputToServer.println(GET_PLEBIAN);
-        outputToServer.println(n);
-        outputToServer.flush();
-        plebs.add(n, new plebian());
-        double newX = Double.parseDouble(inputFromServer.readLine());
-        double newY = Double.parseDouble(inputFromServer.readLine());
-        plebs.get(n).move(newX, newY);
-        plebImages.add(plebs.get(n).getFace());
-    }
-
     public synchronized int getPropagandaCount() {
         outputToServer.println(GET_PROPAGANDA_COUNT);
         outputToServer.flush();
@@ -199,23 +188,6 @@ public class CommemeismGateway {
         double newX = Double.parseDouble(inputFromServer.readLine());
         double newY = Double.parseDouble(inputFromServer.readLine());
         p.updateShape(newX, newY);
-    }
-
-    public synchronized void removePropaganda(int n, List<plebian> plebs, List<ImageView> plebImages) throws IOException {
-        outputToServer.println();
-        outputToServer.println(n);
-        outputToServer.flush();
-        plebs.add(n, new plebian());
-        double newX = Double.parseDouble(inputFromServer.readLine());
-        double newY = Double.parseDouble(inputFromServer.readLine());
-        plebs.get(n).move(newX, newY);
-        plebImages.add(plebs.get(n).getFace());
-    }
-
-
-    public synchronized void throwObject() {
-        outputToServer.println(THROW);
-        outputToServer.flush();
     }
 
     public synchronized void checkScore(ScorePane scorePane) throws IOException {

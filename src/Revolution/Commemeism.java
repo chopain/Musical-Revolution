@@ -192,7 +192,13 @@ class ScoreCheck implements Runnable {
     public void run() {
         while (true) {
             try {
-                gateway.checkScore(scorePane);
+                Platform.runLater(() -> {
+                    try {
+                        gateway.checkScore(scorePane);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
                 Platform.runLater(() -> world.setShapes(propagandists, plebs, propaganda, scorePane));
                 Thread.sleep(250);
             } catch (Exception e) {
@@ -234,6 +240,8 @@ class PropagandaCheck implements Runnable {
             if (gateway.getPropagandaCount() > N) {
                 try {
                     gateway.getPropaganda(N, propagandaObjects, propaganda);
+                    gateway.getPropagandaPos(N, propagandaObjects.get(N));
+                    new Thread(new PropagandaPosition(gateway, plebians, world, plebs, propagandists, propaganda, propagandaObjects, scorePane, N)).start();
                     int N_temp = N;
                     Platform.runLater(() -> world.setShapes(propagandists, plebs, propaganda, scorePane));
                     System.out.println("propaganda added");
@@ -246,6 +254,44 @@ class PropagandaCheck implements Runnable {
                     Thread.sleep(250);
                 } catch (InterruptedException ex) {
                 }
+            }
+        }
+    }
+}
+
+class PropagandaPosition implements Runnable {
+    private CommemeismGateway gateway;
+    private List<plebian> plebians;
+    private List<ImageView> plebs;
+    private List<ImageView> propaganda;
+    private List<ImageView> propagandists;
+    private List<Propaganda> propagandaObjects;
+    private ScorePane scorePane;
+    private WorldPane world;
+    private int N;
+
+    public PropagandaPosition(CommemeismGateway gate, List<plebian> plebs, WorldPane w, List<ImageView> plebImages,
+                              List<ImageView> players, List<ImageView> propaganda, List<Propaganda> propagandaObjects, ScorePane scores, int N) {
+        this.gateway = gate;
+        this.plebians = plebs;
+        this.plebs = plebImages;
+        this.propagandists = players;
+        this.world = w;
+        this.propaganda = propaganda;
+        this.propagandaObjects = propagandaObjects;
+        this.scorePane = scores;
+        this.N = N;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                gateway.getPropagandaPos(N, propagandaObjects.get(N));
+                Platform.runLater(() -> world.setShapes(propagandists, plebs, propaganda, scorePane));
+                System.out.println("propaganda moved");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
