@@ -326,7 +326,6 @@ class PlayerCheck implements Runnable {
         while (true) {
             if (gateway.getPlayerCount() > N) {
                 try {
-                    scorePane.setScores(222, 300, 24);
                     String username = gateway.getPlayerHandle(N);
                     players.put(username, new propagandist(username, gateway.getPlayerType(N)));
                     propagandists.add(players.get(gateway.getPlayerHandle(N)).getFace());
