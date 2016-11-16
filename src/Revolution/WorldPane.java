@@ -30,9 +30,6 @@ public class WorldPane extends Pane {
         this.getChildren().addAll(bases);
         this.getChildren().addAll(borders);
         this.getChildren().addAll(propaganda);
-
-
-
     }
 
     public void setLoading(ImageView bg) {

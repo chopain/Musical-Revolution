@@ -209,7 +209,6 @@ class ScoreCheck implements Runnable {
     }
 }
 
-
 class PropagandaCheck implements Runnable {
     private CommemeismGateway gateway;
     private List<plebian> plebians;
@@ -239,7 +238,6 @@ class PropagandaCheck implements Runnable {
         while (true) {
             if (gateway.getPropagandaCount() > N) {
                 try {
-                    //System.out.println("1st:" + world.getChildren());
                     gateway.getPropaganda(N, propagandaObjects, propaganda);
                     System.out.println(propaganda);
                     new Thread(new PropagandaPosition(gateway, plebians, world, plebs, propagandists, propaganda, propagandaObjects, scorePane, N)).start();
@@ -301,6 +299,7 @@ class PropagandaPosition implements Runnable {
         }
     }
 }
+
 
 class PlayerCheck implements Runnable {
     private CommemeismGateway gateway;
