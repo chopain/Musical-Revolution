@@ -49,40 +49,29 @@ public class FXMLLogInDocumentController implements Initializable {
         this.gateway = gateway;
         classes.setItems(gateway.getClassTypes());
         classes.setValue("Communist");
-        classSelect();
     }
 
-    public void classSelect() {
-        classes.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            selectedClass = newValue;
-            System.out.println("Selected Class: " + selectedClass);
-        });
-    }
-
-    public void setWorld(WorldPane world, List<ImageView> p, List<ImageView> plebs, /*List<plebian> plebians,*/
-                         List<ImageView> bases, List<Shape> borders, TreeMap<String, propagandist> players) {
+    public void setWorld(WorldPane world, List<ImageView> p, List<ImageView> plebs, List<plebian> plebians, TreeMap<String, propagandist> players) {
         this.world = world;
         this.propagandists = p;
         this.players = players;
         this.plebians = plebians;
         this.plebs = plebs;
-        this.bases = bases;
-        this.borders = borders;
     }
 
-    public void enterGame(ActionEvent event) {
-        gateway.sendHandle(handle.getText());
-        System.out.println(handle.getText());
-        gateway.sendClass(selectedClass);
-        List<plebian> plebs = Collections.synchronizedList(new ArrayList<plebian>());
-        ScorePane scorePane = new ScorePane();
-        scorePane.setScores(222, 300, 24);
-        //world.setShapes(background, propagandists, plebs, scorePane);
-        System.out.println(selectedClass);
-        new Thread(new GameCheck(gateway, world, handle.getText(), players, propagandists)).start();
-        new Thread(new PlayerCheck(gateway, players, world, propagandists)).start();
-        //new Thread(new PlebianCheck(gateway, plebs, world, propagandists)).start();
-        handle.getScene().getWindow().hide();
+    @FXML
+    private void enterGame(ActionEvent event) {
+        String selectedClass = classes.getSelectionModel().getSelectedItem();
+        //if (handle.getText() != null && selectedClass != null) {
+            gateway.sendHandle(handle.getText());
+            System.out.println(handle.getText());
+            gateway.sendClass(selectedClass);
+            System.out.println(selectedClass);
+            new Thread(new GameCheck(gateway, world, handle.getText(), players, propagandists, plebs, plebians)).start();
+            new Thread(new PlayerCheck(gateway, players, world, propagandists, plebs, plebians)).start();
+            new Thread(new PlebianCheck(gateway, plebians, world, propagandists, plebs)).start();
+            handle.getScene().getWindow().hide();
+        //}
     }
 
 }

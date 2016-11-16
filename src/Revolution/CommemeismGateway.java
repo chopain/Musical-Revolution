@@ -13,7 +13,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static Revolution.ClassType.*;
 import static Revolution.MoveType.*;
@@ -23,9 +22,6 @@ public class CommemeismGateway {
     private PrintWriter outputToServer;
     private BufferedReader inputFromServer;
     private WorldPane world;
-    private ReentrantLock lock = new ReentrantLock();
-    private static int newCommentsCount = 0;
-    private int curUserComments = 0;
 
     // Establish the connection to the server.
     public CommemeismGateway(WorldPane world) {
@@ -41,42 +37,34 @@ public class CommemeismGateway {
             inputFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
         } catch (IOException ex) {
-
+            ex.printStackTrace();
         }
-
     }
 
 
     // Start the chat by sending in the user's handle.
-    public void sendHandle(String handle) {
-        lock.lock();
+    public synchronized void sendHandle(String handle) {
         outputToServer.println(SEND_HANDLE);
         outputToServer.println(handle);
         outputToServer.flush();
-        lock.unlock();
     }
 
     // Start the chat by sending in the user's handle.
-    public void sendClass(String type) {
-        lock.lock();
+    public synchronized void sendClass(String type) {
         outputToServer.println(SEND_CLASS);
         outputToServer.println(type);
         outputToServer.flush();
-        lock.unlock();
     }
 
 
     // Update player move
-    public void move(int move) {
-        lock.lock();
+    public synchronized void move(int move) {
         outputToServer.println(SEND_MOVE);
         outputToServer.println(move);
         outputToServer.flush();
-        lock.unlock();
     }
 
-    public int getMoveCount() {
-        lock.lock();
+    public synchronized int getMoveCount() {
         outputToServer.println(GET_MOVE_COUNT);
         outputToServer.flush();
         int count = 0;
@@ -85,13 +73,11 @@ public class CommemeismGateway {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        lock.unlock();
         return count;
     }
 
     //Get updated position
-    public void getMoves(int n, TreeMap<String, propagandist> player) throws IOException {
-        lock.lock();
+    public synchronized void getMoves(int n, TreeMap<String, propagandist> player) throws IOException {
         outputToServer.println(GET_MOVE);
         outputToServer.println(n);
         outputToServer.flush();
@@ -99,11 +85,10 @@ public class CommemeismGateway {
         double newX = Double.parseDouble(inputFromServer.readLine());
         double newY = Double.parseDouble(inputFromServer.readLine());
         player.get(user).move(newX, newY);
-        lock.unlock();
     }
 
 
-    public ObservableList<String> getClassTypes() {
+    public synchronized ObservableList<String> getClassTypes() {
         ObservableList<String> types = FXCollections.observableArrayList();
         types.add("Bourgeois");
         types.add("Proletariat");
@@ -112,8 +97,7 @@ public class CommemeismGateway {
     }
 
 
-    public int getPlayerCount() {
-        lock.lock();
+    public synchronized int getPlayerCount() {
         outputToServer.println(GET_PLAYER_COUNT);
         outputToServer.flush();
         int count = 0;
@@ -122,44 +106,36 @@ public class CommemeismGateway {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        lock.unlock();
         return count;
     }
 
-    public String getPlayerHandle(int n) throws IOException {
-        lock.lock();
+    public synchronized String getPlayerHandle(int n) throws IOException {
         outputToServer.println(GET_PLAYER);
         outputToServer.println(n);
         outputToServer.flush();
         String handle = inputFromServer.readLine();
-        lock.unlock();
         return handle;
     }
 
-    public String getPlayerType(int n) throws IOException {
-        lock.lock();
+    public synchronized String getPlayerType(int n) throws IOException {
         outputToServer.println(GET_PLAYER_TYPE);
         outputToServer.println(n);
         outputToServer.flush();
         String type = inputFromServer.readLine();
-        lock.unlock();
         return type;
     }
 
-    public void getPlayerPos(int n, propagandist p) throws IOException {
-        lock.lock();
+    public synchronized void getPlayerPos(int n, propagandist p) throws IOException {
         outputToServer.println(GET_PLAYER_POSITION);
         outputToServer.println(n);
         outputToServer.flush();
         double newX = Double.parseDouble(inputFromServer.readLine());
         double newY = Double.parseDouble(inputFromServer.readLine());
         p.move(newX, newY);
-        lock.unlock();
     }
 
 
-    public int getPlebianCount() {
-        lock.lock();
+    public synchronized int getPlebianCount() {
         outputToServer.println(GET_PLEBIAN_COUNT);
         outputToServer.flush();
         int count = 0;
@@ -168,12 +144,10 @@ public class CommemeismGateway {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        lock.unlock();
         return count;
     }
 
-    public void getPlebian(int n, List<plebian> plebs, List<ImageView> plebImages) throws IOException {
-        lock.lock();
+    public synchronized void getPlebian(int n, List<plebian> plebs, List<ImageView> plebImages) throws IOException {
         outputToServer.println(GET_PLEBIAN);
         outputToServer.println(n);
         outputToServer.flush();
@@ -182,14 +156,56 @@ public class CommemeismGateway {
         double newY = Double.parseDouble(inputFromServer.readLine());
         plebs.get(n).move(newX, newY);
         plebImages.add(plebs.get(n).getFace());
-        lock.unlock();
-
     }
 
-    public void throwObject() {
-        lock.lock();
+    public synchronized void removePlebian(int n, List<plebian> plebs, List<ImageView> plebImages) throws IOException {
+        outputToServer.println(GET_PLEBIAN);
+        outputToServer.println(n);
+        outputToServer.flush();
+        plebs.add(n, new plebian());
+        double newX = Double.parseDouble(inputFromServer.readLine());
+        double newY = Double.parseDouble(inputFromServer.readLine());
+        plebs.get(n).move(newX, newY);
+        plebImages.add(plebs.get(n).getFace());
+    }
+
+    public synchronized int getPropagandaCount() {
+        outputToServer.println(GET_PLEBIAN_COUNT);
+        outputToServer.flush();
+        int count = 0;
+        try {
+            count = Integer.parseInt(inputFromServer.readLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    public synchronized void getPropaganda(int n, List<plebian> plebs, List<ImageView> plebImages) throws IOException {
+        outputToServer.println(GET_PLEBIAN);
+        outputToServer.println(n);
+        outputToServer.flush();
+        plebs.add(n, new plebian());
+        double newX = Double.parseDouble(inputFromServer.readLine());
+        double newY = Double.parseDouble(inputFromServer.readLine());
+        plebs.get(n).move(newX, newY);
+        plebImages.add(plebs.get(n).getFace());
+    }
+
+    public synchronized void removePropaganda(int n, List<plebian> plebs, List<ImageView> plebImages) throws IOException {
+        outputToServer.println(GET_PLEBIAN);
+        outputToServer.println(n);
+        outputToServer.flush();
+        plebs.add(n, new plebian());
+        double newX = Double.parseDouble(inputFromServer.readLine());
+        double newY = Double.parseDouble(inputFromServer.readLine());
+        plebs.get(n).move(newX, newY);
+        plebImages.add(plebs.get(n).getFace());
+    }
+
+
+    public synchronized void throwObject() {
         outputToServer.println(THROW);
         outputToServer.flush();
-        lock.unlock();
     }
 }

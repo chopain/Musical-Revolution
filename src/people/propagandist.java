@@ -8,10 +8,10 @@ public class propagandist {
     private String user;
     private ImageView face = new ImageView();
 
-    public propagandist(String type, String name) {
+    public propagandist(String name, String type) {
         this.classType = type;
         this.user = name;
-        this.face.setImage(new Image("plebian.png"));
+        this.face.setImage(new Image(type.toLowerCase() +".png"));
     }
 
     public ImageView getFace() {
