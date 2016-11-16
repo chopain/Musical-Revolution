@@ -29,6 +29,9 @@ public class WorldPane extends Pane {
         this.getChildren().add(scores);
         this.getChildren().addAll(bases);
         this.getChildren().addAll(borders);
+        this.getChildren().addAll(propaganda);
+
+
 
     }
 

@@ -26,4 +26,12 @@ public class Propaganda implements MoveType {
         i.setLayoutY(y);
         //}
     }
+
+    public double getX() {
+        return i.getLayoutX();
+    }
+
+    public double getY() {
+        return i.getLayoutY();
+    }
 }

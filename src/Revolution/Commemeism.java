@@ -239,12 +239,13 @@ class PropagandaCheck implements Runnable {
         while (true) {
             if (gateway.getPropagandaCount() > N) {
                 try {
+                    //System.out.println("1st:" + world.getChildren());
                     gateway.getPropaganda(N, propagandaObjects, propaganda);
-                    gateway.getPropagandaPos(N, propagandaObjects.get(N));
+                    System.out.println(propaganda);
                     new Thread(new PropagandaPosition(gateway, plebians, world, plebs, propagandists, propaganda, propagandaObjects, scorePane, N)).start();
-                    int N_temp = N;
-                    Platform.runLater(() -> world.setShapes(propagandists, plebs, propaganda, scorePane));
+                    Platform.runLater(() -> world.setShapes(propagandists, plebs, propaganda, scorePane) );
                     System.out.println("propaganda added");
+
                     N++;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -289,6 +290,10 @@ class PropagandaPosition implements Runnable {
             try {
                 gateway.getPropagandaPos(N, propagandaObjects.get(N));
                 Platform.runLater(() -> world.setShapes(propagandists, plebs, propaganda, scorePane));
+                if (propagandaObjects.get(N).getX() < 0 && propagandaObjects.get(N).getY() < 0) {
+                    System.out.println("propaganda removed");
+                    break;
+                }
                 System.out.println("propaganda moved");
             } catch (IOException e) {
                 e.printStackTrace();

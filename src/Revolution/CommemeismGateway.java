@@ -190,6 +190,7 @@ public class CommemeismGateway {
         double newY = Double.parseDouble(inputFromServer.readLine());
         propaganda.add(n, new Propaganda(newX, newY));
         props.add(propaganda.get(n).getShape());
+        System.out.println("get: "+props);
     }
 
     public synchronized void getPropagandaPos(int n, Propaganda p) throws IOException {
