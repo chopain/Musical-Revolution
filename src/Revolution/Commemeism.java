@@ -11,6 +11,7 @@ import javafx.scene.shape.Shape;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import objects.Propaganda;
 import people.*;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ public class Commemeism extends Application {
     private List<ImageView> players = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> plebians = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> objects = Collections.synchronizedList(new ArrayList<ImageView>());
+    private List<ImageView> propaganda = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<Shape> someShapes = Collections.synchronizedList(new ArrayList<Shape>());
     private List<plebian> plebianObjects = Collections.synchronizedList(new ArrayList<plebian>());
 
@@ -57,7 +59,7 @@ public class Commemeism extends Application {
         world.setScene(scene = new Scene(root, 1400, 750));
         world.setResizable(false);
         world.show();
-        
+
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
                 case UP:
@@ -128,19 +130,20 @@ class PlebianCheck implements Runnable {
     private List<plebian> plebians;
     private List<ImageView> plebs;
     private List<ImageView> propagandists;
+    private List<ImageView> propaganda;
     private WorldPane world;
     private ReentrantLock lock = new ReentrantLock();
-    private ImageView background = new ImageView(new Image("gamebg.jpg", 1400, 0, true, true));
     private int N = 0;
     ScorePane scorePane = new ScorePane();
 
-    public PlebianCheck(CommemeismGateway gate, List<plebian> plebs, WorldPane w, List<ImageView> plebImages, List<ImageView> players) {
+    public PlebianCheck(CommemeismGateway gate, List<plebian> plebs, WorldPane w, List<ImageView> plebImages, List<ImageView> players, List<ImageView> propaganda, ScorePane scores) {
         this.gateway = gate;
         this.plebians = plebs;
         this.plebs = plebImages;
         this.propagandists = players;
         this.world = w;
-        scorePane.setScores(222, 300, 24);
+        this.scorePane = scores;
+        this.propaganda = propaganda;
     }
 
     @Override
@@ -150,7 +153,7 @@ class PlebianCheck implements Runnable {
             if (gateway.getPlebianCount() > N) {
                 try {
                     gateway.getPlebian(N, plebians, plebs);
-                    Platform.runLater(() -> world.setShapes(propagandists, plebs, scorePane));
+                    Platform.runLater(() -> world.setShapes(propagandists, plebs, propaganda, scorePane));
                     System.out.println("plebian added");
                     N++;
                 } catch (IOException e) {
@@ -167,32 +170,114 @@ class PlebianCheck implements Runnable {
     }
 }
 
+class ScoreCheck implements Runnable {
+    CommemeismGateway gateway;
+    ScorePane scorePane;
+    private List<ImageView> plebs;
+    private List<ImageView> propagandists;
+    private List<ImageView> propaganda;
+    private WorldPane world;
+
+    public ScoreCheck(CommemeismGateway gate, WorldPane w, List<ImageView> plebImages,
+                      List<ImageView> players, List<ImageView> propaganda, ScorePane scores) {
+        this.gateway = gate;
+        this.plebs = plebImages;
+        this.propagandists = players;
+        this.world = w;
+        this.scorePane = scores;
+        this.propaganda = propaganda;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                gateway.checkScore(scorePane);
+                Platform.runLater(() -> world.setShapes(propagandists, plebs, propaganda, scorePane));
+                Thread.sleep(250);
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+        }
+    }
+}
+
+
+class PropagandaCheck implements Runnable {
+    private CommemeismGateway gateway;
+    private List<plebian> plebians;
+    private List<ImageView> plebs;
+    private List<ImageView> propaganda;
+    private List<ImageView> propagandists;
+    private List<Propaganda> propagandaObjects;
+    private ScorePane scorePane;
+    private WorldPane world;
+    private ReentrantLock lock = new ReentrantLock();
+    private int N = 0;
+
+    public PropagandaCheck(CommemeismGateway gate, List<plebian> plebs, WorldPane w, List<ImageView> plebImages,
+                           List<ImageView> players, List<ImageView> propaganda, List<Propaganda> propagandaObjects, ScorePane scores) {
+        this.gateway = gate;
+        this.plebians = plebs;
+        this.plebs = plebImages;
+        this.propagandists = players;
+        this.world = w;
+        this.propaganda = propaganda;
+        this.propagandaObjects = propagandaObjects;
+        this.scorePane = scores;
+    }
+
+    @Override
+    public synchronized void run() {
+        while (true) {
+            if (gateway.getPropagandaCount() > N) {
+                try {
+                    gateway.getPropaganda(N, propagandaObjects, propaganda);
+                    int N_temp = N;
+                    Platform.runLater(() -> world.setShapes(propagandists, plebs, propaganda, scorePane));
+                    System.out.println("propaganda added");
+                    N++;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    Thread.sleep(250);
+                } catch (InterruptedException ex) {
+                }
+            }
+        }
+    }
+}
+
 class PlayerCheck implements Runnable {
     private CommemeismGateway gateway;
     private TreeMap<String, propagandist> players;
     private List<ImageView> propagandists;
     private List<plebian> plebians;
     private List<ImageView> plebs;
+    private List<ImageView> propaganda;
+    private ScorePane scorePane;
     private WorldPane world;
     private ReentrantLock lock = new ReentrantLock();
     private int N = 0;
-    private ScorePane scorePane = new ScorePane();
 
     public PlayerCheck(CommemeismGateway gate, TreeMap<String, propagandist> players, WorldPane w,
-                       List<ImageView> playerImages, List<ImageView> plebs, List<plebian> plebians) {
+                       List<ImageView> playerImages, List<ImageView> plebs, List<plebian> plebians, List<ImageView> propaganda, ScorePane scores) {
         this.gateway = gate;
         this.players = players;
         this.propagandists = playerImages;
         this.world = w;
         this.plebs = plebs;
         this.plebians = plebians;
-
+        this.propaganda = propaganda;
+        this.scorePane = scores;
     }
 
     @Override
     public void run() {
         while (true) {
-
             if (gateway.getPlayerCount() > N) {
                 try {
                     scorePane.setScores(222, 300, 24);
@@ -201,7 +286,7 @@ class PlayerCheck implements Runnable {
                     propagandists.add(players.get(gateway.getPlayerHandle(N)).getFace());
                     gateway.getPlayerPos(N, players.get(username));
                     Platform.runLater(() -> {
-                        world.setShapes(propagandists, plebs, scorePane);
+                        world.setShapes(propagandists, plebs, propaganda, scorePane);
                     });
                     System.out.println("player added");
                 } catch (IOException e) {
@@ -228,8 +313,7 @@ class GameCheck implements Runnable {
     private String handle;
     private int N = 0;
 
-    public GameCheck(CommemeismGateway gateway, WorldPane world, String text, TreeMap<String, propagandist> players, List<ImageView> project,
-                     List<ImageView> plebs, List<plebian> plebians) {
+    public GameCheck(CommemeismGateway gateway, WorldPane world, String text, TreeMap<String, propagandist> players, List<ImageView> project) {
         this.gateway = gateway;
         this.world = world;
         this.handle = text;

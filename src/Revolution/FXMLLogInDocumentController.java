@@ -14,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Shape;
+import objects.Propaganda;
 import people.plebian;
 import people.propagandist;
 
@@ -63,14 +64,18 @@ public class FXMLLogInDocumentController implements Initializable {
     private void enterGame(ActionEvent event) {
         String selectedClass = classes.getSelectionModel().getSelectedItem();
         //if (handle.getText() != null && selectedClass != null) {
-            gateway.sendHandle(handle.getText());
-            System.out.println(handle.getText());
-            gateway.sendClass(selectedClass);
-            System.out.println(selectedClass);
-            new Thread(new GameCheck(gateway, world, handle.getText(), players, propagandists, plebs, plebians)).start();
-            new Thread(new PlayerCheck(gateway, players, world, propagandists, plebs, plebians)).start();
-            new Thread(new PlebianCheck(gateway, plebians, world, propagandists, plebs)).start();
-            handle.getScene().getWindow().hide();
+        gateway.sendHandle(handle.getText());
+        System.out.println(handle.getText());
+        gateway.sendClass(selectedClass);
+        System.out.println(selectedClass);
+        ScorePane score = new ScorePane();
+        List<ImageView> propaganda = Collections.synchronizedList(new ArrayList<ImageView>());
+        List<Propaganda> propagandaObjects = Collections.synchronizedList(new ArrayList<Propaganda>());
+        new Thread(new GameCheck(gateway, world, handle.getText(), players, propagandists)).start();
+        new Thread(new PlayerCheck(gateway, players, world, propagandists, plebs, plebians, propaganda, score)).start();
+        new Thread(new PlebianCheck(gateway, plebians, world, propagandists, plebs, propaganda, score)).start();
+        new Thread(new PropagandaCheck(gateway, plebians, world, propagandists, plebs, propaganda, propagandaObjects, score)).start();
+        handle.getScene().getWindow().hide();
         //}
     }
 

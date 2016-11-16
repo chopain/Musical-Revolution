@@ -19,7 +19,7 @@ public class WorldPane extends Pane {
         this.borders = border;
     }
 
-    public void setShapes(List<ImageView> players, List<ImageView> plebians, ScorePane scores) {
+    public void setShapes(List<ImageView> players, List<ImageView> plebians, List<ImageView> propaganda, ScorePane scores) {
         this.getChildren().clear();
         this.getChildren().add(background);
         this.getChildren().add(cBase.getFace());

@@ -16,7 +16,7 @@ public class LineSegment {
         this.b = b;
     }
 
-    public void move(int deltaX, int deltaY) {
+    public void move(double deltaX, double deltaY) {
         a.setX(a.getX() + deltaX);
         a.setY(a.getY() + deltaY);
         b.setX(b.getX() + deltaX);

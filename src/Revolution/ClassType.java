@@ -15,4 +15,5 @@ public interface ClassType {
     int GET_PROPAGANDA_COUNT = 18;
     int GET_PROPAGANDA = 19;
     int GET_PROPAGANDA_POSITION = 20;
+    int GET_SCORE = 21;
 }

@@ -3,6 +3,7 @@ package Revolution;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.ImageView;
+import objects.Propaganda;
 import people.plebian;
 import people.propagandist;
 
@@ -170,7 +171,7 @@ public class CommemeismGateway {
     }
 
     public synchronized int getPropagandaCount() {
-        outputToServer.println(GET_PLEBIAN_COUNT);
+        outputToServer.println(GET_PROPAGANDA_COUNT);
         outputToServer.flush();
         int count = 0;
         try {
@@ -181,19 +182,27 @@ public class CommemeismGateway {
         return count;
     }
 
-    public synchronized void getPropaganda(int n, List<plebian> plebs, List<ImageView> plebImages) throws IOException {
-        outputToServer.println(GET_PLEBIAN);
+    public synchronized void getPropaganda(int n, List<Propaganda> propaganda, List<ImageView> props) throws IOException {
+        outputToServer.println(GET_PROPAGANDA);
         outputToServer.println(n);
         outputToServer.flush();
-        plebs.add(n, new plebian());
         double newX = Double.parseDouble(inputFromServer.readLine());
         double newY = Double.parseDouble(inputFromServer.readLine());
-        plebs.get(n).move(newX, newY);
-        plebImages.add(plebs.get(n).getFace());
+        propaganda.add(n, new Propaganda(newX, newY));
+        props.add(propaganda.get(n).getShape());
+    }
+
+    public synchronized void getPropagandaPos(int n, Propaganda p) throws IOException {
+        outputToServer.println(GET_PROPAGANDA_POSITION);
+        outputToServer.println(n);
+        outputToServer.flush();
+        double newX = Double.parseDouble(inputFromServer.readLine());
+        double newY = Double.parseDouble(inputFromServer.readLine());
+        p.updateShape(newX, newY);
     }
 
     public synchronized void removePropaganda(int n, List<plebian> plebs, List<ImageView> plebImages) throws IOException {
-        outputToServer.println(GET_PLEBIAN);
+        outputToServer.println();
         outputToServer.println(n);
         outputToServer.flush();
         plebs.add(n, new plebian());
@@ -207,5 +216,14 @@ public class CommemeismGateway {
     public synchronized void throwObject() {
         outputToServer.println(THROW);
         outputToServer.flush();
+    }
+
+    public synchronized void checkScore(ScorePane scorePane) throws IOException {
+        outputToServer.println(GET_SCORE);
+        outputToServer.flush();
+        double c = Double.parseDouble(inputFromServer.readLine());
+        double b = Double.parseDouble(inputFromServer.readLine());
+        double p = Double.parseDouble(inputFromServer.readLine());
+        scorePane.setScores(c, b, p);
     }
 }
