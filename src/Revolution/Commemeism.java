@@ -123,11 +123,12 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
     private double height;
     private WorldPane world;
     private ScorePane scores;
+
     private List<ImageView> players = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> plebians = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> objects = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> propaganda = Collections.synchronizedList(new ArrayList<ImageView>());
-    private List<Shape> someShapes = Collections.synchronizedList(new ArrayList<Shape>());
+    private List<ImageView> walls = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<plebian> plebianObjects = Collections.synchronizedList(new ArrayList<plebian>());
     private List<Propaganda> propagandaObjects = Collections.synchronizedList(new ArrayList<Propaganda>());
     private List<propagandist> propagandistObjects = Collections.synchronizedList(new ArrayList<propagandist>());
@@ -153,6 +154,14 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
 
     @Override
     public void onBoxesSet(Box[] voters, Box[] walls) {
+        //create plebains from plebian image
+        for (Box b : voters) {
+            ImageView toAdd = new ImageView(new Image("plebian.png"));
+            toAdd.setX(b.getX());
+            toAdd.setY(b.getY());
+            plebians.add(toAdd);
+        }
+        //add base walls to be displayed
 
     }
 
@@ -224,6 +233,7 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
     public void onError(Exception e) {
         e.printStackTrace();
     }
+
 }
 
 
