@@ -6,17 +6,17 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Shape;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class WorldPane extends Pane {
-    private List<ImageView> bases;
-    private List<Shape> borders;
+    private static List<ImageView> bases = Collections.synchronizedList(new ArrayList<ImageView>());
+    private static List<Shape> borders = Collections.synchronizedList(new ArrayList<ImageView>());
     private static ImageView background = new ImageView(new Image("gamebg.jpg", 1400, 0, true, true));
     private static CommunistBase cBase = new CommunistBase();
 
-    public WorldPane(List<ImageView> base, List<Shape> border) {
-        this.bases = base;
-        this.borders = border;
+    public WorldPane() {
     }
 
     public void setShapes(List<ImageView> players, List<ImageView> plebians, List<ImageView> propaganda, ScorePane scores) {

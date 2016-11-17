@@ -21,6 +21,7 @@ import people.plebian;
 import people.propagandist;
 
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -58,7 +59,7 @@ public class FXMLLogInDocumentController implements Initializable {
     }
 
     @FXML
-    private void enterGame(ActionEvent event) {
+    private void enterGame(ActionEvent event) throws IOException {
         String selectedClass = classes.getSelectionModel().getSelectedItem();
         System.out.println(handle.getText());
         System.out.println(selectedClass);

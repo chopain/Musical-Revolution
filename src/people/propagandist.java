@@ -6,36 +6,39 @@ import javafx.scene.image.ImageView;
 public class propagandist {
     private int id;
     private String name;
-    private int size;
+    private int party;
     private int x;
     private int y;
-    private int width;
-    private int height;
     private ImageView face = new ImageView();
 
-    public propagandist(int id, int size,String name, int x, int y, int width, int height) {
+    public propagandist(int id, int party, String name, int x, int y) {
         this.id = id;
         this.name = name;
-        this.size = size;
+        this.party = party;
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
-        switch ()
-        this.face.setImage(new Image("communist.png"));
+        switch (party) {
+            case 0: {
+                this.face.setImage(new Image("communist.png"));
+                break;
+            }
+            case 1: {
+                this.face.setImage(new Image("bourgeois.png"));
+                break;
+            }
+        }
     }
 
     public ImageView getFace() {
         return face;
     }
 
-    public void move(double x, double y) {
+    public int getID(){
+        return id;
+    }
+
+    public void move(int x, int y) {
         face.setLayoutX(x);
         face.setLayoutY(y);
     }
-
-    public void spreadPropaganda(String user, int move) {
-
-    }
-
 }
