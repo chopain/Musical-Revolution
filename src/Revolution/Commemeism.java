@@ -11,6 +11,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import objects.Box;
+import objects.Propaganda;
 import people.*;
 
 import java.util.ArrayList;
@@ -130,6 +131,7 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
     private double width;
     private double height;
     private WorldPane world;
+    private List<Propaganda> propagandaObjects = Collections.synchronizedList(new ArrayList<Propaganda>());
 
     public HandleChanges(WorldPane world, double width, double height) {
         this.width = width;
@@ -150,8 +152,20 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
     }
 
     @Override
-    public void onBallChange(int id, int ox, int oy, int dx, int dy) {
-
+    public void onBallChange(int id, int ox, int oy) {
+        //if propaganda with that id exists, edit the propaganda, otherwise create new object
+        boolean contains = false;
+        for (Propaganda p:propagandaObjects) {
+            if(p.getId() == id){
+                p.setX(ox);
+                p.setY(oy);
+                contains = true;
+                break;
+            }
+        }
+        if(!contains){//create the object
+            propagandaObjects.add(new Propaganda(id, ox, oy));
+        }
     }
 
     @Override
@@ -167,7 +181,13 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
 
     @Override
     public void onBallRemove(int id) {
-
+        for (Propaganda p:propagandaObjects) {
+            if(p.getId() == id){
+                //remove p
+                
+                break;
+            }
+        }
     }
 
     @Override

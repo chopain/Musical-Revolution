@@ -10,6 +10,8 @@ import people.propagandist;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -60,7 +62,7 @@ public class CommemeismGateway extends Thread implements MessageCodes {
 
         void onBoxesSet(Box[] voters, Box[] walls);
 
-        void onBallChange(int id, int ox, int oy, int dx, int dy);
+        void onBallChange(int id, int ox, int oy);
 
         void onClientChange(int id, int size, String name, int x, int y, int width, int height);
 
@@ -92,10 +94,8 @@ public class CommemeismGateway extends Thread implements MessageCodes {
                         int id = in.readInt();
                         int originX = in.readInt();
                         int originY = in.readInt();
-                        int dX = in.readInt();
-                        int dY = in.readInt();
                         if (changed)
-                            listener.onBallChange(id, originX, originY, dX, dY);
+                            listener.onBallChange(id, originX, originY);
                         else
                             listener.onBallRemove(id);
                         break;
