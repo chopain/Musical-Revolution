@@ -53,7 +53,7 @@ public class CommemeismGateway extends Thread implements MessageCodes {
 
         int players = in.readInt();
         for (int i = 0; i < players; i++)
-            listener.onClientChange(in.readInt(), in.readInt(), in.readUTF(), in.readInt(), in.readInt(), in.readInt(), in.readInt());
+            listener.onClientChange(in.readInt(), in.readInt(), in.readUTF(), in.readInt(), in.readInt());
     }
 
 
@@ -64,7 +64,7 @@ public class CommemeismGateway extends Thread implements MessageCodes {
 
         void onBallChange(int id, int ox, int oy);
 
-        void onClientChange(int id, int party, String name, int x, int y, int width, int height);
+        void onClientChange(int id, int party, String name, int x, int y);
 
         void onScoreChange(int team, int score);
 
@@ -109,7 +109,7 @@ public class CommemeismGateway extends Thread implements MessageCodes {
                         int w = in.readInt();
                         int h = in.readInt();
                         if (changed)
-                            listener.onClientChange(id, party, name, originX, originY, w, h);
+                            listener.onClientChange(id, party, name, originX, originY);
                         else
                             listener.onClientRemove(id);
                         break;

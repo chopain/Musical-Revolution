@@ -12,7 +12,7 @@ import java.util.List;
 
 public class WorldPane extends Pane {
     private static List<ImageView> bases = Collections.synchronizedList(new ArrayList<ImageView>());
-    private static List<Shape> borders = Collections.synchronizedList(new ArrayList<ImageView>());
+    private static List<Shape> borders = Collections.synchronizedList(new ArrayList<Shape>());
     private static ImageView background = new ImageView(new Image("gamebg.jpg", 1400, 0, true, true));
     private static CommunistBase cBase = new CommunistBase();
 

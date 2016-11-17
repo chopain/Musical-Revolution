@@ -129,8 +129,8 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
     private List<ImageView> propaganda = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<Shape> someShapes = Collections.synchronizedList(new ArrayList<Shape>());
     private List<plebian> plebianObjects = Collections.synchronizedList(new ArrayList<plebian>());
-    private List<Propaganda> propagandaObjects = Collections.synchronizedList(new ArrayList<plebian>());
-    private List<propagandist> propagandistObjects = Collections.synchronizedList(new ArrayList<plebian>());
+    private List<Propaganda> propagandaObjects = Collections.synchronizedList(new ArrayList<Propaganda>());
+    private List<propagandist> propagandistObjects = Collections.synchronizedList(new ArrayList<propagandist>());
 
     public HandleChanges(WorldPane world, double width, double height) {
         this.width = width;
@@ -159,15 +159,15 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
     public void onBallChange(int id, int ox, int oy) {
         //if propaganda with that id exists, edit the propaganda, otherwise create new object
         boolean contains = false;
-        for (Propaganda p:propagandaObjects) {
-            if(p.getId() == id){
+        for (Propaganda p : propagandaObjects) {
+            if (p.getId() == id) {
                 p.setX(ox);
                 p.setY(oy);
                 contains = true;
                 break;
             }
         }
-        if(!contains){//create the object
+        if (!contains) {//create the object
             propagandaObjects.add(new Propaganda(id, ox, oy));
         }
     }
@@ -189,13 +189,13 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
 
     @Override
     public void onScoreChange(int team, int score) {
-        scores.setScores();
+//        scores.setScores();
     }
 
     @Override
     public void onBallRemove(int id) {
-        for (Propaganda p: propagandaObjects) {
-            if(p.getId() == id){
+        for (Propaganda p : propagandaObjects) {
+            if (p.getId() == id) {
                 //remove p
 
                 break;
