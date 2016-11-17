@@ -11,6 +11,7 @@ import javafx.scene.shape.Shape;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import objects.Box;
 import objects.Propaganda;
 import people.*;
 
@@ -23,7 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static Revolution.MoveType.*;
 
-public class Commemeism extends Application {
+public class Commemeism extends Application implements CommemeismGateway.GatewayListener{
     private List<ImageView> players = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> plebians = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> objects = Collections.synchronizedList(new ArrayList<ImageView>());
@@ -108,6 +109,7 @@ public class Commemeism extends Application {
                 if (pressedRight) gateway.move(MOVERIGHT);
                 if (pressedShift) {
                     if (lastthrow + 200 < System.currentTimeMillis()) {
+                        System.out.print("attempt shoot");
                         gateway.move(THROW);
                         lastthrow = System.currentTimeMillis();
                     }
@@ -123,273 +125,48 @@ public class Commemeism extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-}
 
-class PlebianCheck implements Runnable {
-    private CommemeismGateway gateway;
-    private List<plebian> plebians;
-    private List<ImageView> plebs;
-    private List<ImageView> propagandists;
-    private List<ImageView> propaganda;
-    private WorldPane world;
-    private ReentrantLock lock = new ReentrantLock();
-    private int N = 0;
-    ScorePane scorePane = new ScorePane();
+    @Override
+    public void onInitialized(int width, int height, int score0, int score1, Box me) {
+        Box world = new Box(0,0, width, height, false);
 
-    public PlebianCheck(CommemeismGateway gate, List<plebian> plebs, WorldPane w, List<ImageView> plebImages, List<ImageView> players, List<ImageView> propaganda, ScorePane scores) {
-        this.gateway = gate;
-        this.plebians = plebs;
-        this.plebs = plebImages;
-        this.propagandists = players;
-        this.world = w;
-        this.scorePane = scores;
-        this.propaganda = propaganda;
     }
 
     @Override
-    public void run() {
-        while (true) {
-            lock.lock();
-            if (gateway.getPlebianCount() > N) {
-                try {
-                    gateway.getPlebian(N, plebians, plebs);
-                    Platform.runLater(() -> world.setShapes(propagandists, plebs, propaganda, scorePane));
-                    System.out.println("plebian added");
-                    N++;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                lock.unlock();
-            } else {
-                try {
-                    Thread.sleep(250);
-                } catch (InterruptedException ex) {
-                }
-            }
-        }
-    }
-}
+    public void onBoxesSet(Box[] voters, Box[] walls) {
 
-class ScoreCheck implements Runnable {
-    CommemeismGateway gateway;
-    ScorePane scorePane;
-    private List<ImageView> plebs;
-    private List<ImageView> propagandists;
-    private List<ImageView> propaganda;
-    private WorldPane world;
-
-    public ScoreCheck(CommemeismGateway gate, WorldPane w, List<ImageView> plebImages,
-                      List<ImageView> players, List<ImageView> propaganda, ScorePane scores) {
-        this.gateway = gate;
-        this.plebs = plebImages;
-        this.propagandists = players;
-        this.world = w;
-        this.scorePane = scores;
-        this.propaganda = propaganda;
     }
 
     @Override
-    public void run() {
-        while (true) {
-            try {
-                Platform.runLater(() -> {
-                    try {
-                        gateway.checkScore(scorePane);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-                Platform.runLater(() -> world.setShapes(propagandists, plebs, propaganda, scorePane));
-                Thread.sleep(250);
-            } catch (Exception e) {
-                e.printStackTrace();
+    public void onBallChange(int id, int ox, int oy, int dx, int dy) {
 
-            }
-        }
-    }
-}
-
-class PropagandaCheck implements Runnable {
-    private CommemeismGateway gateway;
-    private List<plebian> plebians;
-    private List<ImageView> plebs;
-    private List<ImageView> propaganda;
-    private List<ImageView> propagandists;
-    private List<Propaganda> propagandaObjects;
-    private ScorePane scorePane;
-    private WorldPane world;
-    private ReentrantLock lock = new ReentrantLock();
-    private int N = 0;
-
-    public PropagandaCheck(CommemeismGateway gate, List<plebian> plebs, WorldPane w, List<ImageView> plebImages,
-                           List<ImageView> players, List<ImageView> propaganda, List<Propaganda> propagandaObjects, ScorePane scores) {
-        this.gateway = gate;
-        this.plebians = plebs;
-        this.plebs = plebImages;
-        this.propagandists = players;
-        this.world = w;
-        this.propaganda = propaganda;
-        this.propagandaObjects = propagandaObjects;
-        this.scorePane = scores;
     }
 
     @Override
-    public synchronized void run() {
-        while (true) {
-            if (gateway.getPropagandaCount() > N) {
-                try {
-                    gateway.getPropaganda(N, propagandaObjects, propaganda);
-                    System.out.println(propaganda);
-                    new Thread(new PropagandaPosition(gateway, plebians, world, plebs, propagandists, propaganda, propagandaObjects, scorePane, N)).start();
-                    Platform.runLater(() -> world.setShapes(propagandists, plebs, propaganda, scorePane) );
-                    System.out.println("propaganda added");
-
-                    N++;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                try {
-                    Thread.sleep(250);
-                } catch (InterruptedException ex) {
-                }
-            }
-        }
-    }
-}
-
-class PropagandaPosition implements Runnable {
-    private CommemeismGateway gateway;
-    private List<plebian> plebians;
-    private List<ImageView> plebs;
-    private List<ImageView> propaganda;
-    private List<ImageView> propagandists;
-    private List<Propaganda> propagandaObjects;
-    private ScorePane scorePane;
-    private WorldPane world;
-    private int N;
-
-    public PropagandaPosition(CommemeismGateway gate, List<plebian> plebs, WorldPane w, List<ImageView> plebImages,
-                              List<ImageView> players, List<ImageView> propaganda, List<Propaganda> propagandaObjects, ScorePane scores, int N) {
-        this.gateway = gate;
-        this.plebians = plebs;
-        this.plebs = plebImages;
-        this.propagandists = players;
-        this.world = w;
-        this.propaganda = propaganda;
-        this.propagandaObjects = propagandaObjects;
-        this.scorePane = scores;
-        this.N = N;
+    public void onClientChange(int id, int size, String name, int x, int y, int width, int height) {
+        // if the client with "id" already exists, only edit x and y
+        // otherwise create the player itself
     }
 
     @Override
-    public void run() {
-        while (true) {
-            try {
-                gateway.getPropagandaPos(N, propagandaObjects.get(N));
-                Platform.runLater(() -> world.setShapes(propagandists, plebs, propaganda, scorePane));
-                if (propagandaObjects.get(N).getX() < 0 && propagandaObjects.get(N).getY() < 0) {
-                    System.out.println("propaganda removed");
-                    break;
-                }
-                System.out.println("propaganda moved");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-}
+    public void onScoreChange(int team, int score) {
 
-
-class PlayerCheck implements Runnable {
-    private CommemeismGateway gateway;
-    private TreeMap<String, propagandist> players;
-    private List<ImageView> propagandists;
-    private List<plebian> plebians;
-    private List<ImageView> plebs;
-    private List<ImageView> propaganda;
-    private ScorePane scorePane;
-    private WorldPane world;
-    private ReentrantLock lock = new ReentrantLock();
-    private int N = 0;
-
-    public PlayerCheck(CommemeismGateway gate, TreeMap<String, propagandist> players, WorldPane w,
-                       List<ImageView> playerImages, List<ImageView> plebs, List<plebian> plebians, List<ImageView> propaganda, ScorePane scores) {
-        this.gateway = gate;
-        this.players = players;
-        this.propagandists = playerImages;
-        this.world = w;
-        this.plebs = plebs;
-        this.plebians = plebians;
-        this.propaganda = propaganda;
-        this.scorePane = scores;
     }
 
     @Override
-    public void run() {
-        while (true) {
-            if (gateway.getPlayerCount() > N) {
-                try {
-                    String username = gateway.getPlayerHandle(N);
-                    players.put(username, new propagandist(username, gateway.getPlayerType(N)));
-                    propagandists.add(players.get(gateway.getPlayerHandle(N)).getFace());
-                    gateway.getPlayerPos(N, players.get(username));
-                    Platform.runLater(() -> {
-                        world.setShapes(propagandists, plebs, propaganda, scorePane);
-                    });
-                    System.out.println("player added");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                N++;
+    public void onBallRemove(int id) {
 
-            } else {
-                try {
-                    Thread.sleep(30);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }
-    }
-}
-
-class GameCheck implements Runnable {
-    private List<ImageView> projections;
-    private CommemeismGateway gateway;
-    private TreeMap<String, propagandist> players;
-    private WorldPane world;
-    private String handle;
-    private int N = 0;
-
-    public GameCheck(CommemeismGateway gateway, WorldPane world, String text, TreeMap<String, propagandist> players, List<ImageView> project) {
-        this.gateway = gateway;
-        this.world = world;
-        this.handle = text;
-        this.players = players;
-        this.projections = project;
     }
 
     @Override
-    public void run() {
-        while (true) {
-            if (gateway.getMoveCount() > N) {
-                int N_temp = N;
-                Platform.runLater(() -> {
-                    try {
-                        gateway.getMoves(N_temp, players);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-                N++;
-            } else {
-                try {
-                    Thread.sleep(30);
-                } catch (InterruptedException ex) {
-                }
-            }
-        }
+    public void onClientRemove(int id) {
+
+    }
+
+    @Override
+    public void onError(Exception e) {
+
     }
 }
+
 
