@@ -140,7 +140,7 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
     }
 
     private void updateWorld() {
-
+        world.setShapes(players, plebians, propaganda, scores);
     }
 
     @Override
@@ -148,6 +148,7 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
         Box worldEdges = new Box(0, 0, width, height);
         ScorePane scores = new ScorePane();
         scores.setScores(score0, score1);
+        updateWorld();
     }
 
     @Override
@@ -169,7 +170,9 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
         }
         if (!contains) {//create the object
             propagandaObjects.add(new Propaganda(id, ox, oy));
+            propaganda.add(propagandaObjects.get(id).getShape());
         }
+        updateWorld();
     }
 
     @Override
@@ -184,23 +187,26 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
         }
         if (!contains) {
             propagandistObjects.add(new propagandist(id, party, name, x, y));
+            players.add(propagandistObjects.get(id).getFace());
         }
+        updateWorld();
     }
 
     @Override
     public void onScoreChange(int team, int score) {
-//        scores.setScores();
+        scores.setScores(team, score);
+        updateWorld();
     }
 
     @Override
     public void onBallRemove(int id) {
         for (Propaganda p : propagandaObjects) {
             if (p.getId() == id) {
-                //remove p
-
+                propagandaObjects.remove(p);
                 break;
             }
         }
+        updateWorld();
     }
 
     @Override
@@ -211,13 +217,13 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
                 break;
             }
         }
+        updateWorld();
     }
 
     @Override
     public void onError(Exception e) {
-
+        e.printStackTrace();
     }
-
 }
 
 

@@ -8,57 +8,52 @@ import javafx.scene.shape.RectangleBuilder;
 import static bases.PixelMeasures.WORLD_WIDTH;
 
 public class ScorePane extends Pane {
+    Rectangle c;
+    Rectangle b;
+    Rectangle cBar;
+    Rectangle bBar;
+
     public ScorePane() {
-    }
-
-    public void setScores(int cScore, int bScore) {
-
-        Rectangle c = RectangleBuilder.create()
+        c = RectangleBuilder.create()
                 .height(20).width(WORLD_WIDTH / 3.0 - 10)
                 .stroke(Color.BLACK)
                 .build();
         c.setLayoutX(5);
         c.setLayoutY(5);
 
-        Rectangle cBar = RectangleBuilder.create()
-                .height(18).width((WORLD_WIDTH / 3.0 - 10) * (cScore / 300.0))
+        cBar = RectangleBuilder.create()
+                .height(18).width((WORLD_WIDTH / 3.0 - 10) * (100.0 / 200.0))
                 .fill(Color.RED)
                 .build();
         cBar.setLayoutX(6);
         cBar.setLayoutY(6);
 
-        Rectangle b = RectangleBuilder.create()
+        b = RectangleBuilder.create()
                 .height(20).width(WORLD_WIDTH / 3.0 - 10)
                 .stroke(Color.BLACK)
                 .build();
         b.setLayoutX(5);
         b.setLayoutY(30);
 
-        Rectangle bBar = RectangleBuilder.create()
-                .height(18).width((WORLD_WIDTH / 3.0 - 10) * (bScore / 300.0))
+        bBar = RectangleBuilder.create()
+                .height(18).width((WORLD_WIDTH / 3.0 - 10) * (100.0 / 200.0))
                 .stroke(Color.BLACK)
                 .fill(Color.GREEN)
                 .build();
         bBar.setLayoutX(6);
         bBar.setLayoutY(31);
+    }
 
-/*
-        Rectangle p = RectangleBuilder.create()
-                .height(20).width(WORLD_WIDTH / 3.0 - 10)
-                .stroke(Color.BLACK)
-                .build();
-        p.setLayoutX(5);
-        p.setLayoutY(55);
-
-        Rectangle pBar = RectangleBuilder.create()
-                .height(18).width((WORLD_WIDTH / 3.0 - 10) * (pScore / 300.0))
-                .fill(Color.YELLOW)
-                .build();
-        pBar.setLayoutX(6);
-        pBar.setLayoutY(56);
-*/
+    public void setScores(int team, int score) {
+        switch (team) {
+            case 0: {
+                cBar.setWidth((WORLD_WIDTH / 3.0 - 10) * (score / 200.0));
+            }
+            case 1: {
+                bBar.setWidth((WORLD_WIDTH / 3.0 - 10) * (score / 200.0));
+            }
+        }
         this.getChildren().clear();
         this.getChildren().addAll(c, b, cBar, bBar);
     }
-
 }
