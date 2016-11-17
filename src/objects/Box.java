@@ -21,7 +21,7 @@ public class Box {
 
 
     // Set outward to true if you want a box with outward pointed normals
-    public Box(double x, double y, double width, double height) {
+    public Box(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -68,7 +68,6 @@ public class Box {
         }
         return null;
     }
-
     //check if other box and this box intersect -- return true if intersection, false otherwise
     public boolean boxIntersection(Box other){
         boolean intersection = false;

@@ -11,7 +11,7 @@ public class ScorePane extends Pane {
     public ScorePane() {
     }
 
-    public void setScores(double cScore, double bScore, double pScore) {
+    public void setScores(int cScore, int bScore) {
 
         Rectangle c = RectangleBuilder.create()
                 .height(20).width(WORLD_WIDTH / 3.0 - 10)
@@ -42,7 +42,7 @@ public class ScorePane extends Pane {
         bBar.setLayoutX(6);
         bBar.setLayoutY(31);
 
-
+/*
         Rectangle p = RectangleBuilder.create()
                 .height(20).width(WORLD_WIDTH / 3.0 - 10)
                 .stroke(Color.BLACK)
@@ -56,9 +56,9 @@ public class ScorePane extends Pane {
                 .build();
         pBar.setLayoutX(6);
         pBar.setLayoutY(56);
-
+*/
         this.getChildren().clear();
-        this.getChildren().addAll(c, b, p, cBar, bBar, pBar);
+        this.getChildren().addAll(c, b, cBar, bBar);
     }
 
 }

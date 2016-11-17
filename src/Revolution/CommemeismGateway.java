@@ -20,11 +20,9 @@ public class CommemeismGateway extends Thread implements MessageCodes {
     private final DataOutputStream out;
     private final GatewayListener listener;
 
-    private WorldPane world;
 
     // Establish the connection to the server.
-    public CommemeismGateway(WorldPane world, GatewayListener listen) throws Exception {
-        this.world = world;
+    public CommemeismGateway(GatewayListener listen) throws Exception {
 
         // Create a socket to connect to the server
         Socket socket = new Socket("localhost", 8000);
@@ -35,19 +33,19 @@ public class CommemeismGateway extends Thread implements MessageCodes {
         listener = listen;
     }
 
-    public void setFields(String name, int side){
+    public void setFields(String name, int side) throws IOException {
         out.writeUTF(name);
         out.writeInt(side);
 
         listener.onInitialized(in.readInt(), in.readInt(), in.readInt(), in.readInt(),
-                new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt(), false));
+                new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt()));
 
         Box[] walls = new Box[in.readInt()];
         for (int i = 0; i < walls.length; i++)
-            walls[i] = new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt(), false);
+            walls[i] = new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt());
         Box[] voters = new Box[in.readInt()];
         for (int i = 0; i < voters.length; i++)
-            voters[i] = new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt(), false);
+            voters[i] = new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt());
 
         listener.onBoxesSet(voters, walls);
 

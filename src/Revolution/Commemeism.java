@@ -20,7 +20,7 @@ import java.util.TreeMap;
 
 import static Revolution.MoveType.*;
 
-public class Commemeism extends Application{
+public class Commemeism extends Application {
     private List<ImageView> players = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> plebians = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> objects = Collections.synchronizedList(new ArrayList<ImageView>());
@@ -37,8 +37,8 @@ public class Commemeism extends Application{
         TreeMap<String, propagandist> playerObjects = new TreeMap<>();
         ImageView loading = new ImageView(new Image("gamebg_load.jpg", 1400, 0, true, true));
         root.setLoading(loading);
-        HandleChanges changeListener = new HandleChanges(1400, 750);
-        CommemeismGateway gateway = new CommemeismGateway(world, new HandleChanges(1400, 750));
+        HandleChanges changeListener = new HandleChanges(root, 1400, 750);
+        CommemeismGateway gateway = new CommemeismGateway(changeListener);
 
         //Game start dialog
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLLogInDocument.fxml"));
@@ -49,7 +49,7 @@ public class Commemeism extends Application{
         dialog.initModality(Modality.WINDOW_MODAL);
         dialog.initStyle(StageStyle.UTILITY);
         FXMLLogInDocumentController controller = loader.getController();
-        controller.setWorld(root, gateway);
+        controller.setGateway(gateway);
         dialog.setOnCloseRequest(event -> System.exit(0));
         dialog.show();
 
@@ -129,15 +129,17 @@ public class Commemeism extends Application{
 class HandleChanges implements CommemeismGateway.GatewayListener {
     private double width;
     private double height;
+    private WorldPane world;
 
-    public HandleChanges(double width, double height) {
+    public HandleChanges(WorldPane world, double width, double height) {
         this.width = width;
         this.height = height;
+        this.world = world;
     }
 
     @Override
-    public void onInitialized(double width, double height, double score0, double score1, Box me) {
-        Box world = new Box(0, 0, width, height, false);
+    public void onInitialized(int width, int height, int score0, int score1, Box me) {
+        Box world = new Box(0, 0, width, height);
         ScorePane scores = new ScorePane();
         scores.setScores(score0, score1);
     }

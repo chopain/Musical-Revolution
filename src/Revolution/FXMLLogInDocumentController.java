@@ -53,8 +53,7 @@ public class FXMLLogInDocumentController implements Initializable {
         System.exit(0);
     }
 
-    public void setWorld(WorldPane world, CommemeismGateway gate) {
-        this.world = world;
+    public void setGateway(CommemeismGateway gate) {
         this.gateway = gate;
     }
 
@@ -63,6 +62,7 @@ public class FXMLLogInDocumentController implements Initializable {
         String selectedClass = classes.getSelectionModel().getSelectedItem();
         System.out.println(handle.getText());
         System.out.println(selectedClass);
+
         gateway.setFields(handle.getText(), types.indexOf(selectedClass));
         handle.getScene().getWindow().hide();
     }

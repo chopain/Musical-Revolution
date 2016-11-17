@@ -21,7 +21,8 @@ public class propagandist {
         this.y = y;
         this.width = width;
         this.height = height;
-        this.face.setImage(new Image(type.toLowerCase() +".png"));
+        switch ()
+        this.face.setImage(new Image("communist.png"));
     }
 
     public ImageView getFace() {
