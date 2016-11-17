@@ -15,15 +15,7 @@ import java.util.TreeMap;
 
 import static Revolution.MoveType.*;
 
-public class CommemeismGateway extends Thread{
-
-    private static final int CLIENT_MOVE = 1;
-    private static final int CLIENT_THROW = 2;
-
-    private static final int SERVER_CHANGED_BALL = 1;
-    private static final int SERVER_CHANGED_CLIENT = 2;
-    private static final int SERVER_CHANGED_SCORE = 3;
-
+public class CommemeismGateway extends Thread implements MessageCodes {
     private final DataInputStream in;
     private final DataOutputStream out;
     private final GatewayListener listener;
@@ -31,15 +23,19 @@ public class CommemeismGateway extends Thread{
     private WorldPane world;
 
     // Establish the connection to the server.
-    public CommemeismGateway(WorldPane world, String name, int side, GatewayListener l) throws Exception{
+    public CommemeismGateway(WorldPane world, GatewayListener listen) throws Exception {
         this.world = world;
+
         // Create a socket to connect to the server
         Socket socket = new Socket("localhost", 8000);
 
+
         out = new DataOutputStream(socket.getOutputStream());
         in = new DataInputStream(socket.getInputStream());
-        listener = l;
+        listener = listen;
+    }
 
+    public void setFields(String name, int side){
         out.writeUTF(name);
         out.writeInt(side);
 
@@ -47,53 +43,60 @@ public class CommemeismGateway extends Thread{
                 new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt(), false));
 
         Box[] walls = new Box[in.readInt()];
-        for(int i = 0; i < walls.length; i++)
+        for (int i = 0; i < walls.length; i++)
             walls[i] = new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt(), false);
         Box[] voters = new Box[in.readInt()];
-        for(int i = 0; i < voters.length; i++)
+        for (int i = 0; i < voters.length; i++)
             voters[i] = new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt(), false);
 
         listener.onBoxesSet(voters, walls);
 
         int players = in.readInt();
-        for(int i = 0; i < players; i++)
+        for (int i = 0; i < players; i++)
             listener.onClientChange(in.readInt(), in.readInt(), in.readUTF(), in.readInt(), in.readInt(), in.readInt(), in.readInt());
-
     }
 
-    public interface GatewayListener{
+
+    public interface GatewayListener {
         void onInitialized(int width, int height, int score0, int score1, Box me);
+
         void onBoxesSet(Box[] voters, Box[] walls);
+
         void onBallChange(int id, int ox, int oy, int dx, int dy);
-        void onClientChange(int id, int size,String name, int x, int y, int width, int height);
+
+        void onClientChange(int id, int size, String name, int x, int y, int width, int height);
+
         void onScoreChange(int team, int score);
+
         void onBallRemove(int id);
+
         void onClientRemove(int id);
+
         void onError(Exception e);
     }
 
     private boolean error = false;
 
-    private synchronized void throwError(Exception e){
-        if(error)
+    private synchronized void throwError(Exception e) {
+        if (error)
             return;
         error = true;
         listener.onError(e);
     }
 
     @Override
-    public void run(){
+    public void run() {
         try {
             while (true) {
                 boolean changed = in.readBoolean();
-                switch (in.readInt()){
+                switch (in.readInt()) {
                     case SERVER_CHANGED_BALL: {
                         int id = in.readInt();
                         int originX = in.readInt();
                         int originY = in.readInt();
                         int dX = in.readInt();
                         int dY = in.readInt();
-                        if(changed)
+                        if (changed)
                             listener.onBallChange(id, originX, originY, dX, dY);
                         else
                             listener.onBallRemove(id);
@@ -107,7 +110,7 @@ public class CommemeismGateway extends Thread{
                         int originY = in.readInt();
                         int w = in.readInt();
                         int h = in.readInt();
-                        if(changed)
+                        if (changed)
                             listener.onClientChange(id, side, name, originX, originY, w, h);
                         else
                             listener.onClientRemove(id);
@@ -121,25 +124,25 @@ public class CommemeismGateway extends Thread{
                     }
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             throwError(e);
         }
     }
 
-    public synchronized void move(int direction){
+    public synchronized void move(int direction) {
         try {
             out.writeInt(CLIENT_MOVE);
             out.writeInt(direction);
-        }catch(Exception e){
+        } catch (Exception e) {
             throwError(e);
         }
     }
 
-    public synchronized void throwP(int direction){
+    public synchronized void throwPropaganda(int direction) {
         try {
             out.writeInt(CLIENT_THROW);
             out.writeInt(direction);
-        }catch(Exception e){
+        } catch (Exception e) {
             throwError(e);
         }
     }

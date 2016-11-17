@@ -1,7 +1,6 @@
 package Revolution;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,25 +11,23 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import objects.Box;
-import objects.Propaganda;
 import people.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static Revolution.MoveType.*;
 
-public class Commemeism extends Application implements CommemeismGateway.GatewayListener{
+public class Commemeism extends Application{
     private List<ImageView> players = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> plebians = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> objects = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> propaganda = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<Shape> someShapes = Collections.synchronizedList(new ArrayList<Shape>());
     private List<plebian> plebianObjects = Collections.synchronizedList(new ArrayList<plebian>());
+    private CommemeismGateway gateway;
 
     private boolean pressedDown, pressedUp, pressedLeft, pressedRight, pressedShift;
 
@@ -38,10 +35,12 @@ public class Commemeism extends Application implements CommemeismGateway.Gateway
     public void start(Stage world) throws Exception {
         WorldPane root = new WorldPane(objects, someShapes);
         TreeMap<String, propagandist> playerObjects = new TreeMap<>();
-        CommemeismGateway gateway = new CommemeismGateway(root);
         ImageView loading = new ImageView(new Image("gamebg_load.jpg", 1400, 0, true, true));
         root.setLoading(loading);
+        HandleChanges changeListener = new HandleChanges(1400, 750);
+        CommemeismGateway gateway = new CommemeismGateway(world, new HandleChanges(1400, 750));
 
+        //Game start dialog
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLLogInDocument.fxml"));
         Parent logroot = loader.load();
         Stage dialog = new Stage();
@@ -50,8 +49,7 @@ public class Commemeism extends Application implements CommemeismGateway.Gateway
         dialog.initModality(Modality.WINDOW_MODAL);
         dialog.initStyle(StageStyle.UTILITY);
         FXMLLogInDocumentController controller = loader.getController();
-        controller.setGateway(gateway);
-        controller.setWorld(root, players, plebians, plebianObjects, playerObjects);
+        controller.setWorld(root, gateway);
         dialog.setOnCloseRequest(event -> System.exit(0));
         dialog.show();
 
@@ -80,6 +78,7 @@ public class Commemeism extends Application implements CommemeismGateway.Gateway
                     break;
             }
         });
+
         scene.setOnKeyReleased(e -> {
             switch (e.getCode()) {
                 case UP:
@@ -101,17 +100,17 @@ public class Commemeism extends Application implements CommemeismGateway.Gateway
         });
 
         new Thread(() -> {
-            long lastthrow = 0;
+            long prevThrow = 0;
             while (true) {
                 if (pressedUp) gateway.move(MOVEUP);
                 if (pressedDown) gateway.move(MOVEDOWN);
                 if (pressedLeft) gateway.move(MOVELEFT);
                 if (pressedRight) gateway.move(MOVERIGHT);
                 if (pressedShift) {
-                    if (lastthrow + 200 < System.currentTimeMillis()) {
+                    if (prevThrow + 200 < System.currentTimeMillis()) {
                         System.out.print("attempt shoot");
                         gateway.move(THROW);
-                        lastthrow = System.currentTimeMillis();
+                        prevThrow = System.currentTimeMillis();
                     }
                 }
                 try {
@@ -125,11 +124,22 @@ public class Commemeism extends Application implements CommemeismGateway.Gateway
     public static void main(String[] args) {
         launch(args);
     }
+}
+
+class HandleChanges implements CommemeismGateway.GatewayListener {
+    private double width;
+    private double height;
+
+    public HandleChanges(double width, double height) {
+        this.width = width;
+        this.height = height;
+    }
 
     @Override
-    public void onInitialized(int width, int height, int score0, int score1, Box me) {
-        Box world = new Box(0,0, width, height, false);
-
+    public void onInitialized(double width, double height, double score0, double score1, Box me) {
+        Box world = new Box(0, 0, width, height, false);
+        ScorePane scores = new ScorePane();
+        scores.setScores(score0, score1);
     }
 
     @Override
@@ -167,6 +177,7 @@ public class Commemeism extends Application implements CommemeismGateway.Gateway
     public void onError(Exception e) {
 
     }
+
 }
 
 

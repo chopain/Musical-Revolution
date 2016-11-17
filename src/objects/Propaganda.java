@@ -19,12 +19,8 @@ public class Propaganda implements MoveType {
     }
 
     public void updateShape(double x, double y) {
-        /*if (x == -1.0 && y == -1.0) {
-
-        } else {*/
         i.setLayoutX(x);
         i.setLayoutY(y);
-        //}
     }
 
     public double getX() {

@@ -16,25 +16,22 @@ public class Box {
     private double y;
     private double width;
     private double height;
+    private static int counter = 0;
+    public final int id;
+
 
     // Set outward to true if you want a box with outward pointed normals
-    public Box(double x, double y, double width, double height, boolean outward) {
+    public Box(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         walls = new ArrayList<LineSegment>();
-        if (outward) {
-            walls.add(new LineSegment(new Point(x + width, y), new Point(x, y)));
-            walls.add(new LineSegment(new Point(x + width, y + height), new Point(x + width, y)));
-            walls.add(new LineSegment(new Point(x, y + height), new Point(x + width, y + height)));
-            walls.add(new LineSegment(new Point(x, y), new Point(x, y + height)));
-        } else {
-            walls.add(new LineSegment(new Point(x, y), new Point(x + width, y)));
-            walls.add(new LineSegment(new Point(x + width, y), new Point(x + width, y + height)));
-            walls.add(new LineSegment(new Point(x + width, y + height), new Point(x, y + height)));
-            walls.add(new LineSegment(new Point(x, y + height), new Point(x, y)));
-        }
+        walls.add(new LineSegment(new Point(x, y), new Point(x + width, y)));
+        walls.add(new LineSegment(new Point(x + width, y), new Point(x + width, y + height)));
+        walls.add(new LineSegment(new Point(x + width, y + height), new Point(x, y + height)));
+        walls.add(new LineSegment(new Point(x, y + height), new Point(x, y)));
+        id = counter++;
     }
 
     public double getX() {
@@ -71,6 +68,7 @@ public class Box {
         }
         return null;
     }
+
     //check if other box and this box intersect -- return true if intersection, false otherwise
     public boolean boxIntersection(Box other){
         boolean intersection = false;

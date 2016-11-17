@@ -5,6 +5,8 @@
  */
 package Revolution;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -31,6 +33,7 @@ public class FXMLLogInDocumentController implements Initializable {
     private List<ImageView> bases;
     private List<Shape> borders;
     private List<plebian> plebians;
+    private ObservableList<String> types = FXCollections.observableArrayList();
 
     @FXML
     private ComboBox<String> classes;
@@ -40,46 +43,28 @@ public class FXMLLogInDocumentController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        types.add("Bourgeois");
+        types.add("Communist");
+        classes.setItems(types);
+        classes.setValue("Communist");
     }
 
     public void quit(ActionEvent event) {
         System.exit(0);
     }
 
-    public void setGateway(CommemeismGateway gateway) {
-        this.gateway = gateway;
-        classes.setItems(gateway.getClassTypes());
-        classes.setValue("Communist");
-    }
-
-    public void setWorld(WorldPane world, List<ImageView> p, List<ImageView> plebs, List<plebian> plebians, TreeMap<String, propagandist> players) {
+    public void setWorld(WorldPane world, CommemeismGateway gate) {
         this.world = world;
-        this.propagandists = p;
-        this.players = players;
-        this.plebians = plebians;
-        this.plebs = plebs;
+        this.gateway = gate;
     }
 
     @FXML
     private void enterGame(ActionEvent event) {
         String selectedClass = classes.getSelectionModel().getSelectedItem();
-        //if (handle.getText() != null && selectedClass != null) {
-        gateway.sendHandle(handle.getText());
         System.out.println(handle.getText());
-        gateway.sendClass(selectedClass);
-
         System.out.println(selectedClass);
-        ScorePane score = new ScorePane();
-        List<ImageView> propaganda = Collections.synchronizedList(new ArrayList<ImageView>());
-        List<Propaganda> propagandaObjects = Collections.synchronizedList(new ArrayList<Propaganda>());
-        new Thread(new GameCheck(gateway, world, handle.getText(), players, propagandists)).start();
-        new Thread(new PlayerCheck(gateway, players, world, propagandists, plebs, plebians, propaganda, score)).start();
-        new Thread(new PlebianCheck(gateway, plebians, world, propagandists, plebs, propaganda, score)).start();
-        new Thread(new PropagandaCheck(gateway, plebians, world, propagandists, plebs, propaganda, propagandaObjects, score)).start();
-        new Thread(new ScoreCheck(gateway, world, plebs, propagandists, propaganda, score)).start();
+        gateway.setFields(handle.getText(), types.indexOf(selectedClass));
         handle.getScene().getWindow().hide();
-        //}
     }
-
 }
 
