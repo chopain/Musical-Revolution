@@ -43,11 +43,14 @@ public class Commemeism extends Application {
         dialog.setOnCloseRequest(event -> System.exit(0));
         dialog.show();
 
+
         world.setTitle("Hello World, prepare for the Proletariat Uprising.");
         Scene scene;
         world.setScene(scene = new Scene(root, 1400, 750));
         world.setResizable(false);
         world.show();
+
+        world.setOnCloseRequest(e -> System.exit(0));
 
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
@@ -110,6 +113,8 @@ public class Commemeism extends Application {
                 }
             }
         }).start();
+        dialog.requestFocus();
+
     }
 
     public static void main(String[] args) {
@@ -200,6 +205,7 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
             for (propagandist p : propagandistObjects.values()) {
                 if (p.getID() == id) {
                     p.move(x, y);
+                    p.setParty(party);
                     if (p.getName().equals(handle)) {
                         scores.setpCount(pCount);
                     }

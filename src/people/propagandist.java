@@ -12,6 +12,22 @@ public class propagandist {
     private ImageView face = new ImageView();
     private int propagandaCount;
 
+    public void setParty(int party){
+        if(this.party == party)
+            return;
+        this.party = party;
+        switch (party) {
+            case 0: {
+                this.face.setImage(new Image("communist.png"));
+                break;
+            }
+            case 1: {
+                this.face.setImage(new Image("bourgeois.png"));
+                break;
+            }
+        }
+    }
+
     public propagandist(int id, int party, String name, int x, int y) {
         this.id = id;
         this.name = name;
