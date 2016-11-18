@@ -155,7 +155,7 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
 
     @Override
     public void onBoxesSet(Box[] voters, Box[] walls) {
-        //create plebains from plebian image
+        //create plebians from plebian image
         for (Box b : voters) {
             ImageView toAdd = new ImageView(new Image("plebian.png"));
             toAdd.setX(b.getX());
@@ -163,7 +163,7 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
             plebians.add(toAdd);
         }
         //add base walls to be displayed from Box objects
-        for (Box b:walls) {
+        for (Box b : walls) {
             this.walls.add(b.getShape());
         }
     }
@@ -190,16 +190,18 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
     @Override
     public void onClientChange(int id, int party, String name, int x, int y) {
         boolean contains = false;
-        for (propagandist p : propagandistObjects) {
-            if (p.getID() == id) {
-                p.move(x, y);
-                contains = true;
-                break;
+        if (!propagandaObjects.isEmpty()) {
+            for (propagandist p : propagandistObjects) {
+                if (p.getID() == id) {
+                    p.move(x, y);
+                    contains = true;
+                    break;
+                }
             }
         }
         if (!contains) {
             propagandistObjects.add(new propagandist(id, party, name, x, y));
-            players.add(propagandistObjects.get(id).getFace());
+            players.add(id, propagandistObjects.get(id).getFace());
         }
         updateWorld();
     }
