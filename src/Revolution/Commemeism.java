@@ -6,7 +6,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -14,9 +13,7 @@ import javafx.stage.StageStyle;
 import objects.Box;
 import objects.Propaganda;
 import people.*;
-
 import java.util.*;
-
 import static Revolution.MoveType.*;
 
 public class Commemeism extends Application {

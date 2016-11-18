@@ -1,23 +1,11 @@
 package Revolution;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
 import objects.Box;
-import objects.Propaganda;
-import people.plebian;
-import people.propagandist;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeMap;
 
-import static Revolution.MoveType.*;
 
 public class CommemeismGateway extends Thread implements MessageCodes {
     private final DataInputStream in;

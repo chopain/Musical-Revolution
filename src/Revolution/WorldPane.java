@@ -1,6 +1,8 @@
 package Revolution;
 
+import bases.BourgeoisBase;
 import bases.CommunistBase;
+import bases.PaperFactoryBase;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -16,6 +18,8 @@ public class WorldPane extends Pane {
     private static List<Shape> borders = Collections.synchronizedList(new ArrayList<Shape>());
     private static ImageView background = new ImageView(new Image("gamebg.jpg", 1400, 0, true, true));
     private static CommunistBase cBase = new CommunistBase();
+    private static BourgeoisBase bBase = new BourgeoisBase();
+    private static PaperFactoryBase pBase = new PaperFactoryBase();
 
 
     public WorldPane() {
@@ -25,6 +29,8 @@ public class WorldPane extends Pane {
         this.getChildren().clear();
         this.getChildren().add(background);
         this.getChildren().add(cBase.getFace());
+        this.getChildren().add(bBase.getFace());
+        this.getChildren().add(pBase.getFace());
         this.getChildren().addAll(walls);
         this.getChildren().addAll(players);
         this.getChildren().addAll(plebians);
