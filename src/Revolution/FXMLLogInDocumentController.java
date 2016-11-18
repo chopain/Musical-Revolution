@@ -47,7 +47,6 @@ public class FXMLLogInDocumentController implements Initializable {
         types.add("Bourgeois");
         types.add("Communist");
         classes.setItems(types);
-        classes.setValue("Communist");
     }
 
     public void quit(ActionEvent event) {
@@ -61,10 +60,13 @@ public class FXMLLogInDocumentController implements Initializable {
     @FXML
     private void enterGame(ActionEvent event) throws IOException {
         String selectedClass = classes.getSelectionModel().getSelectedItem();
+        if(!types.contains(selectedClass) || handle.getText().isEmpty())
+            return;
         System.out.println(handle.getText());
         System.out.println(selectedClass);
 
         gateway.setFields(handle.getText(), types.indexOf(selectedClass));
+        gateway.start();
         handle.getScene().getWindow().hide();
     }
 }

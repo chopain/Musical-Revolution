@@ -15,18 +15,17 @@ public class propagandist {
         this.id = id;
         this.name = name;
         this.party = party;
-        this.x = x;
-        this.y = y;
         switch (party) {
-            case 0: {
+            case 1: {
                 this.face.setImage(new Image("communist.png"));
                 break;
             }
-            case 1: {
+            case 0: {
                 this.face.setImage(new Image("bourgeois.png"));
                 break;
             }
         }
+        move(x, y);
     }
 
     public ImageView getFace() {
@@ -38,7 +37,7 @@ public class propagandist {
     }
 
     public void move(int x, int y) {
-        face.setLayoutX(x);
-        face.setLayoutY(y);
+        face.setLayoutX(this.x = x);
+        face.setLayoutY(this.y = y);
     }
 }

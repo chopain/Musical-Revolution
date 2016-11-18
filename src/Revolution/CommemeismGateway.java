@@ -1,8 +1,10 @@
 package Revolution;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import objects.Box;
 import objects.Propaganda;
 import people.plebian;
@@ -43,8 +45,9 @@ public class CommemeismGateway extends Thread implements MessageCodes {
                 new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt()));
 
         Box[] walls = new Box[in.readInt()];
-        for (int i = 0; i < walls.length; i++)
+        for (int i = 0; i < walls.length; i++) {
             walls[i] = new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt());
+        }
         Box[] voters = new Box[in.readInt()];
         for (int i = 0; i < voters.length; i++)
             voters[i] = new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt());
@@ -89,15 +92,16 @@ public class CommemeismGateway extends Thread implements MessageCodes {
         try {
             while (true) {
                 boolean changed = in.readBoolean();
-                switch (in.readInt()) {
+                int msg = in.readInt();
+                switch (msg) {
                     case SERVER_CHANGED_BALL: {
                         int id = in.readInt();
                         int originX = in.readInt();
                         int originY = in.readInt();
                         if (changed)
-                            listener.onBallChange(id, originX, originY);
+                            Platform.runLater(() -> listener.onBallChange(id, originX, originY));
                         else
-                            listener.onBallRemove(id);
+                            Platform.runLater(() -> listener.onBallRemove(id));
                         break;
                     }
                     case SERVER_CHANGED_CLIENT: {
@@ -106,18 +110,16 @@ public class CommemeismGateway extends Thread implements MessageCodes {
                         String name = in.readUTF();
                         int originX = in.readInt();
                         int originY = in.readInt();
-                        int w = in.readInt();
-                        int h = in.readInt();
                         if (changed)
-                            listener.onClientChange(id, party, name, originX, originY);
+                            Platform.runLater(() -> listener.onClientChange(id, party, name, originX, originY));
                         else
-                            listener.onClientRemove(id);
+                            Platform.runLater(() -> listener.onClientRemove(id));
                         break;
                     }
                     case SERVER_CHANGED_SCORE: {
                         int team = in.readInt();
                         int score = in.readInt();
-                        listener.onScoreChange(team, score);
+                        Platform.runLater(() -> listener.onScoreChange(team, score));
                         break;
                     }
                 }

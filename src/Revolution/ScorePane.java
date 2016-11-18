@@ -22,7 +22,7 @@ public class ScorePane extends Pane {
         c.setLayoutY(5);
 
         cBar = RectangleBuilder.create()
-                .height(18).width((WORLD_WIDTH / 3.0 - 10) * (100.0 / 200.0))
+                .height(18).width((WORLD_WIDTH / 3.0 - 10) * (150.0 / 300.0))
                 .fill(Color.RED)
                 .build();
         cBar.setLayoutX(6);
@@ -36,7 +36,7 @@ public class ScorePane extends Pane {
         b.setLayoutY(30);
 
         bBar = RectangleBuilder.create()
-                .height(18).width((WORLD_WIDTH / 3.0 - 10) * (100.0 / 200.0))
+                .height(18).width((WORLD_WIDTH / 3.0 - 10) * (150.0 / 300.0))
                 .stroke(Color.BLACK)
                 .fill(Color.GREEN)
                 .build();
@@ -46,11 +46,13 @@ public class ScorePane extends Pane {
 
     public void setScores(int team, int score) {
         switch (team) {
-            case 0: {
-                cBar.setWidth((WORLD_WIDTH / 3.0 - 10) * (score / 200.0));
-            }
             case 1: {
-                bBar.setWidth((WORLD_WIDTH / 3.0 - 10) * (score / 200.0));
+                cBar.setWidth((WORLD_WIDTH / 3.0 - 10) * (score / 300.0));
+                break;
+            }
+            case 0: {
+                bBar.setWidth((WORLD_WIDTH / 3.0 - 10) * (score / 300.0));
+                break;
             }
         }
         this.getChildren().clear();

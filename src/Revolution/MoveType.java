@@ -1,9 +1,8 @@
 package Revolution;
 
 public interface MoveType {
-    int MOVEUP = 7;
-    int MOVEDOWN = 8;
-    int MOVELEFT = 9;
-    int MOVERIGHT = 10;
-    int THROW = 11;
+    int MOVEDOWN = 0;
+    int MOVEUP = 2;
+    int MOVELEFT = 3;
+    int MOVERIGHT = 1;
 }

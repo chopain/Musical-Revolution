@@ -15,9 +15,7 @@ import objects.Box;
 import objects.Propaganda;
 import people.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static Revolution.MoveType.*;
 
@@ -94,15 +92,16 @@ public class Commemeism extends Application {
 
         new Thread(() -> {
             long prevThrow = 0;
+            int direction = MOVEUP;
             while (true) {
-                if (pressedUp) gateway.move(MOVEUP);
-                if (pressedDown) gateway.move(MOVEDOWN);
-                if (pressedLeft) gateway.move(MOVELEFT);
-                if (pressedRight) gateway.move(MOVERIGHT);
+                if (pressedUp) gateway.move(direction = MOVEUP);
+                if (pressedDown) gateway.move(direction = MOVEDOWN);
+                if (pressedLeft) gateway.move(direction = MOVELEFT);
+                if (pressedRight) gateway.move(direction = MOVERIGHT);
                 if (pressedShift) {
                     if (prevThrow + 200 < System.currentTimeMillis()) {
                         System.out.print("attempt shoot");
-                        gateway.move(THROW);
+                        gateway.throwPropaganda(direction);
                         prevThrow = System.currentTimeMillis();
                     }
                 }
@@ -127,29 +126,28 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
 
     private List<ImageView> players = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> plebians = Collections.synchronizedList(new ArrayList<ImageView>());
-    private List<ImageView> objects = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> propaganda = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<Shape> walls = Collections.synchronizedList(new ArrayList<Shape>());
     private List<plebian> plebianObjects = Collections.synchronizedList(new ArrayList<plebian>());
-    private List<Propaganda> propagandaObjects = Collections.synchronizedList(new ArrayList<Propaganda>());
-    private List<propagandist> propagandistObjects = Collections.synchronizedList(new ArrayList<propagandist>());
+    private HashMap<Integer, Propaganda> propagandaObjects = new HashMap<>();
+    private HashMap<Integer, propagandist> propagandistObjects = new HashMap<>();
 
     public HandleChanges(WorldPane world, double width, double height) {
         this.width = width;
         this.height = height;
         this.world = world;
-        this.scores = new ScorePane();
+        scores = new ScorePane();
     }
 
     private void updateWorld() {
-        world.setShapes(players, plebians, propaganda, scores);
+        world.setShapes(players, plebians, propaganda, walls, scores);
     }
 
     @Override
     public void onInitialized(int width, int height, int score0, int score1, Box me) {
         Box worldEdges = new Box(0, 0, width, height);
-        ScorePane scores = new ScorePane();
-        scores.setScores(score0, score1);
+        scores.setScores(1, score1);
+        scores.setScores(0, score0);
         updateWorld();
     }
 
@@ -172,7 +170,7 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
     public void onBallChange(int id, int ox, int oy) {
         //if propaganda with that id exists, edit the propaganda, otherwise create new object
         boolean contains = false;
-        for (Propaganda p : propagandaObjects) {
+        for (Propaganda p : propagandaObjects.values()) {
             if (p.getId() == id) {
                 p.setX(ox);
                 p.setY(oy);
@@ -181,17 +179,17 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
             }
         }
         if (!contains) {//create the object
-            propagandaObjects.add(new Propaganda(id, ox, oy));
+            propagandaObjects.put(id, new Propaganda(id, ox, oy));
             propaganda.add(propagandaObjects.get(id).getShape());
+            updateWorld();
         }
-        updateWorld();
     }
 
     @Override
     public void onClientChange(int id, int party, String name, int x, int y) {
         boolean contains = false;
-        if (!propagandaObjects.isEmpty()) {
-            for (propagandist p : propagandistObjects) {
+        if (!propagandistObjects.isEmpty()) {
+            for (propagandist p : propagandistObjects.values()) {
                 if (p.getID() == id) {
                     p.move(x, y);
                     contains = true;
@@ -199,46 +197,59 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
                 }
             }
         }
+
         if (!contains) {
-            propagandistObjects.add(new propagandist(id, party, name, x, y));
-            players.add(id, propagandistObjects.get(id).getFace());
+            propagandistObjects.put(id, new propagandist(id, party, name, x, y));
+            players.add(propagandistObjects.get(id).getFace());
+            updateWorld();
         }
-        updateWorld();
     }
 
     @Override
     public void onScoreChange(int team, int score) {
+        System.out.println("Score: " + team + ": " + score);
         scores.setScores(team, score);
         updateWorld();
     }
 
     @Override
     public void onBallRemove(int id) {
-        for (Propaganda p : propagandaObjects) {
-            if (p.getId() == id) {
-                propagandaObjects.remove(p);
+        boolean changed = false;
+        for (Iterator<Map.Entry<Integer, Propaganda>> i = propagandaObjects.entrySet().iterator(); i.hasNext(); ) {
+            Map.Entry<Integer, Propaganda> p = i.next();
+            if (p.getValue().getId() == id) {
+                propaganda.remove(p.getValue().getShape());
+                i.remove();
+                changed = true;
                 break;
             }
         }
-        updateWorld();
+        if (changed)
+            updateWorld();
     }
 
     @Override
     public void onClientRemove(int id) {
-        for (propagandist p : propagandistObjects) {
-            if (p.getID() == id) {
-                propagandistObjects.remove(p);
+        boolean changed = false;
+        for (Iterator<Map.Entry<Integer, propagandist>> i = propagandistObjects.entrySet().iterator(); i.hasNext(); ) {
+            Map.Entry<Integer, propagandist> p = i.next();
+            if (p.getValue().getID() == id) {
+                players.remove(p.getValue().getFace());
+                i.remove();
+                changed = true;
                 break;
             }
         }
-        updateWorld();
+        if (changed)
+            updateWorld();
     }
 
     @Override
     public void onError(Exception e) {
         e.printStackTrace();
+        System.out.println("lost connection");
+        System.exit(0);
     }
-
 }
 
 

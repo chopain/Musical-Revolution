@@ -103,6 +103,10 @@ public class Box {
         return r;
     }
 
+    public Shape getRectangle(){
+        return r;
+    }
+
     public void updateShape() {
         r.setX(x);
         r.setY(y);

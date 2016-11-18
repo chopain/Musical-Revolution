@@ -16,7 +16,8 @@ public class Propaganda implements MoveType {
         i.setLayoutY(startY);
     }
 
-    public ImageView getShape() {
+    public ImageView
+    getShape() {
         return i;
     }
 
@@ -37,10 +38,10 @@ public class Propaganda implements MoveType {
     }
 
     public void setX(int x){
-        i.setX(x);
+        i.setLayoutX(x);
     }
 
     public void setY(int y){
-        i.setY(y);
+        i.setLayoutY(y);
     }
 }
