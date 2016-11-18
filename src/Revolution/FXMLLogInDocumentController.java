@@ -44,9 +44,10 @@ public class FXMLLogInDocumentController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        types.add("Bourgeois");
         types.add("Communist");
+        types.add("Bourgeois");
         classes.setItems(types);
+        classes.setValue("Communist");
     }
 
     public void quit(ActionEvent event) {

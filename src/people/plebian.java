@@ -12,10 +12,12 @@ public class plebian {
     private double bScale = 100;
     private double pScale = 100;
     private double max = 0;
+    public final int id;
 
 
-    public plebian() {
+    public plebian(int id) {
         this.face.setImage(new Image("plebian.png"));
+        this.id = id;
     }
 
     public ImageView getPlebian() {

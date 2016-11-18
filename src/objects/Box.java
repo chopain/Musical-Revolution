@@ -18,6 +18,7 @@ public class Box {
     private double height;
     private static int counter = 0;
     public final int id;
+    public int _id;
 
 
     // Set outward to true if you want a box with outward pointed normals

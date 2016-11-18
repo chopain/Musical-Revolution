@@ -29,7 +29,7 @@ public class CommemeismGateway extends Thread implements MessageCodes {
     public CommemeismGateway(GatewayListener listen) throws Exception {
 
         // Create a socket to connect to the server
-        Socket socket = new Socket("localhost", 8000);
+        Socket socket = new Socket("143.44.75.183", 8000);
 
 
         out = new DataOutputStream(socket.getOutputStream());
@@ -49,8 +49,11 @@ public class CommemeismGateway extends Thread implements MessageCodes {
             walls[i] = new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt());
         }
         Box[] voters = new Box[in.readInt()];
-        for (int i = 0; i < voters.length; i++)
+        for (int i = 0; i < voters.length; i++) {
+            int id = in.readInt();
             voters[i] = new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt());
+            voters[i]._id = id;
+        }
 
         listener.onBoxesSet(voters, walls);
 
@@ -66,6 +69,8 @@ public class CommemeismGateway extends Thread implements MessageCodes {
         void onBoxesSet(Box[] voters, Box[] walls);
 
         void onBallChange(int id, int ox, int oy);
+
+        void onBoxChange(int id, int x, int y);
 
         void onClientChange(int id, int party, String name, int x, int y);
 
@@ -120,6 +125,14 @@ public class CommemeismGateway extends Thread implements MessageCodes {
                         int team = in.readInt();
                         int score = in.readInt();
                         Platform.runLater(() -> listener.onScoreChange(team, score));
+                        break;
+                    }
+                    case SERVER_CHANGED_BOX: {
+                        int id = in.readInt();
+                        int x = in.readInt();
+                        int y = in.readInt();
+                        if (changed)
+                            Platform.runLater(() -> listener.onBoxChange(id, x, y));
                         break;
                     }
                 }

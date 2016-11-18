@@ -16,11 +16,11 @@ public class propagandist {
         this.name = name;
         this.party = party;
         switch (party) {
-            case 1: {
+            case 0: {
                 this.face.setImage(new Image("communist.png"));
                 break;
             }
-            case 0: {
+            case 1: {
                 this.face.setImage(new Image("bourgeois.png"));
                 break;
             }
