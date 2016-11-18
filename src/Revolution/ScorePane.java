@@ -4,6 +4,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.RectangleBuilder;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 import static bases.PixelMeasures.WORLD_WIDTH;
 
@@ -12,6 +14,8 @@ public class ScorePane extends Pane {
     Rectangle b;
     Rectangle cBar;
     Rectangle bBar;
+    int count = 0;
+    Text pCount = new Text(5, 80, "Propaganda Count: " + count);
 
     public ScorePane() {
         c = RectangleBuilder.create()
@@ -42,6 +46,14 @@ public class ScorePane extends Pane {
                 .build();
         bBar.setLayoutX(6);
         bBar.setLayoutY(31);
+        pCount.setFill(Color.YELLOW);
+        pCount.setFont(new Font(25));
+        pCount.setStroke(Color.BLACK);
+    }
+
+    public void setpCount(int n) {
+        count = n;
+        pCount.setText("Propaganda Count: " + count);
     }
 
     public void setScores(int team, int score) {
@@ -56,6 +68,6 @@ public class ScorePane extends Pane {
             }
         }
         this.getChildren().clear();
-        this.getChildren().addAll(c, b, cBar, bBar);
+        this.getChildren().addAll(c, b, cBar, bBar, pCount);
     }
 }

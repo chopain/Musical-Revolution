@@ -47,7 +47,7 @@ public class CommemeismGateway extends Thread implements MessageCodes {
 
         int players = in.readInt();
         for (int i = 0; i < players; i++)
-            listener.onClientChange(in.readInt(), in.readInt(), in.readUTF(), in.readInt(), in.readInt());
+            listener.onClientChange(in.readInt(), in.readInt(), in.readUTF(), in.readInt(), in.readInt(), in.readInt(), in.readBoolean());
     }
 
 
@@ -60,7 +60,7 @@ public class CommemeismGateway extends Thread implements MessageCodes {
 
         void onBoxChange(int id, int x, int y);
 
-        void onClientChange(int id, int party, String name, int x, int y);
+        void onClientChange(int id, int party, String name, int x, int y, int c, boolean b);
 
         void onScoreChange(int team, int score);
 
@@ -103,8 +103,10 @@ public class CommemeismGateway extends Thread implements MessageCodes {
                         String name = in.readUTF();
                         int originX = in.readInt();
                         int originY = in.readInt();
+                        int propagandaCount = in.readInt();
+                        boolean enterFactory = in.readBoolean();
                         if (changed)
-                            Platform.runLater(() -> listener.onClientChange(id, party, name, originX, originY));
+                            Platform.runLater(() -> listener.onClientChange(id, party, name, originX, originY, propagandaCount, enterFactory));
                         else
                             Platform.runLater(() -> listener.onClientRemove(id));
                         break;

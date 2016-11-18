@@ -183,7 +183,8 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
                 break;
             }
         }
-        if (!contains) {//create the object
+        if (!contains) {
+            //create the object
             propagandaObjects.put(id, new Propaganda(id, ox, oy));
             propaganda.add(propagandaObjects.get(id).getShape());
             updateWorld();
@@ -191,7 +192,7 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
     }
 
     @Override
-    public void onClientChange(int id, int party, String name, int x, int y) {
+    public void onClientChange(int id, int party, String name, int x, int y, int pCount, boolean enteredFactory) {
         boolean contains = false;
         if (!propagandistObjects.isEmpty()) {
             for (propagandist p : propagandistObjects.values()) {
@@ -203,6 +204,7 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
             }
         }
 
+        scores.setpCount(pCount);
         if (!contains) {
             propagandistObjects.put(id, new propagandist(id, party, name, x, y));
             players.add(propagandistObjects.get(id).getFace());
