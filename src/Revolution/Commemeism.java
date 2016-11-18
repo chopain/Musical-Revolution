@@ -13,7 +13,9 @@ import javafx.stage.StageStyle;
 import objects.Box;
 import objects.Propaganda;
 import people.*;
+
 import java.util.*;
+
 import static Revolution.MoveType.*;
 
 public class Commemeism extends Application {
@@ -25,7 +27,7 @@ public class Commemeism extends Application {
         ImageView loading = new ImageView(new Image("gamebg_load.jpg", 1400, 0, true, true));
         root.setLoading(loading);
 
-        HandleChanges changeListener = new HandleChanges(root, 1400, 750);
+        HandleChanges changeListener = new HandleChanges(root);
         CommemeismGateway gateway = new CommemeismGateway(changeListener);
 
         //Game start dialog
@@ -37,7 +39,7 @@ public class Commemeism extends Application {
         dialog.initModality(Modality.WINDOW_MODAL);
         dialog.initStyle(StageStyle.UTILITY);
         FXMLLogInDocumentController controller = loader.getController();
-        controller.setGateway(gateway);
+        controller.setGateway(gateway, changeListener);
         dialog.setOnCloseRequest(event -> System.exit(0));
         dialog.show();
 
@@ -116,11 +118,9 @@ public class Commemeism extends Application {
 }
 
 class HandleChanges implements CommemeismGateway.GatewayListener {
-    private double width;
-    private double height;
     private WorldPane world;
     private ScorePane scores;
-
+    private String handle;
     private List<ImageView> players = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> plebians = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> propaganda = Collections.synchronizedList(new ArrayList<ImageView>());
@@ -129,11 +129,13 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
     private HashMap<Integer, Propaganda> propagandaObjects = new HashMap<>();
     private HashMap<Integer, propagandist> propagandistObjects = new HashMap<>();
 
-    public HandleChanges(WorldPane world, double width, double height) {
-        this.width = width;
-        this.height = height;
+    public HandleChanges(WorldPane world) {
         this.world = world;
         scores = new ScorePane();
+    }
+
+    public void setUser(String user) {
+        this.handle = user;
     }
 
     private void updateWorld() {
@@ -142,8 +144,8 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
 
     @Override
     public void onBoxChange(int id, int x, int y) {
-        for(plebian b : plebianObjects){
-            if(b.id == id)
+        for (plebian b : plebianObjects) {
+            if (b.id == id)
                 b.move(x, y);
         }
     }
@@ -198,13 +200,15 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
             for (propagandist p : propagandistObjects.values()) {
                 if (p.getID() == id) {
                     p.move(x, y);
+                    if (p.getName().equals(handle)) {
+                        scores.setpCount(pCount);
+                    }
                     contains = true;
                     break;
                 }
             }
         }
 
-        scores.setpCount(pCount);
         if (!contains) {
             propagandistObjects.put(id, new propagandist(id, party, name, x, y));
             players.add(propagandistObjects.get(id).getFace());

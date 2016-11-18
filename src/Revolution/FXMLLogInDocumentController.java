@@ -35,6 +35,7 @@ public class FXMLLogInDocumentController implements Initializable {
     private List<Shape> borders;
     private List<plebian> plebians;
     private ObservableList<String> types = FXCollections.observableArrayList();
+    private HandleChanges listener;
 
     @FXML
     private ComboBox<String> classes;
@@ -54,8 +55,9 @@ public class FXMLLogInDocumentController implements Initializable {
         System.exit(0);
     }
 
-    public void setGateway(CommemeismGateway gate) {
+    public void setGateway(CommemeismGateway gate, HandleChanges listener) {
         this.gateway = gate;
+        this.listener = listener;
     }
 
     @FXML
@@ -65,7 +67,7 @@ public class FXMLLogInDocumentController implements Initializable {
             return;
         System.out.println(handle.getText());
         System.out.println(selectedClass);
-
+        listener.setUser(handle.getText());
         gateway.setFields(handle.getText(), types.indexOf(selectedClass));
         gateway.start();
         handle.getScene().getWindow().hide();

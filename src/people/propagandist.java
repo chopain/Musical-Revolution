@@ -30,6 +30,10 @@ public class propagandist {
         move(x, y);
     }
 
+    public String getName(){
+        return name;
+    }
+
     public ImageView getFace() {
         return face;
     }
