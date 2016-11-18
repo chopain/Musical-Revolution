@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -128,7 +129,7 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
     private List<ImageView> plebians = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> objects = Collections.synchronizedList(new ArrayList<ImageView>());
     private List<ImageView> propaganda = Collections.synchronizedList(new ArrayList<ImageView>());
-    private List<ImageView> walls = Collections.synchronizedList(new ArrayList<ImageView>());
+    private List<Shape> walls = Collections.synchronizedList(new ArrayList<Shape>());
     private List<plebian> plebianObjects = Collections.synchronizedList(new ArrayList<plebian>());
     private List<Propaganda> propagandaObjects = Collections.synchronizedList(new ArrayList<Propaganda>());
     private List<propagandist> propagandistObjects = Collections.synchronizedList(new ArrayList<propagandist>());
@@ -161,8 +162,10 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
             toAdd.setY(b.getY());
             plebians.add(toAdd);
         }
-        //add base walls to be displayed
-
+        //add base walls to be displayed from Box objects
+        for (Box b:walls) {
+            this.walls.add(b.getShape());
+        }
     }
 
     @Override
