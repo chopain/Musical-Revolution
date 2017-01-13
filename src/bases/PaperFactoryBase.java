@@ -5,7 +5,7 @@ import javafx.scene.image.ImageView;
 
 //middle of board or something
 public class PaperFactoryBase implements PixelMeasures {
-    private ImageView face = new ImageView();
+    private final ImageView face = new ImageView();
 
     public PaperFactoryBase(){
         this.face.setImage(new Image("paperfactory.png"));

@@ -11,24 +11,25 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import objects.Box;
-import objects.Propaganda;
+import objects.Composition;
 import people.*;
 
 import java.util.*;
 
 import static Revolution.MoveType.*;
 
-public class Commemeism extends Application {
+public class Compose extends Application {
+    // booleans for key presses
     private boolean pressedDown, pressedUp, pressedLeft, pressedRight, pressedShift;
 
     @Override
     public void start(Stage world) throws Exception {
         WorldPane root = new WorldPane();
-        ImageView loading = new ImageView(new Image("gamebg_load.jpg", 1400, 0, true, true));
+        ImageView loading = new ImageView(new Image("startbg.jpg", 1400, 0, true, true));
         root.setLoading(loading);
 
         HandleChanges changeListener = new HandleChanges(root);
-        CommemeismGateway gateway = new CommemeismGateway(changeListener);
+        Gateway gateway = new Gateway(changeListener);
 
         //Game start dialog
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLLogInDocument.fxml"));
@@ -43,8 +44,8 @@ public class Commemeism extends Application {
         dialog.setOnCloseRequest(event -> System.exit(0));
         dialog.show();
 
-
-        world.setTitle("Hello World, prepare for the Proletariat Uprising.");
+        // main game window
+        world.setTitle("Play.");
         Scene scene;
         world.setScene(scene = new Scene(root, 1400, 750));
         world.setResizable(false);
@@ -52,6 +53,7 @@ public class Commemeism extends Application {
 
         world.setOnCloseRequest(e -> System.exit(0));
 
+        // key change listener
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
                 case UP:
@@ -92,6 +94,7 @@ public class Commemeism extends Application {
             }
         });
 
+        // handles moves by the player
         new Thread(() -> {
             long prevThrow = 0;
             int direction = MOVEUP;
@@ -102,8 +105,7 @@ public class Commemeism extends Application {
                 if (pressedRight) gateway.move(direction = MOVERIGHT);
                 if (pressedShift) {
                     if (prevThrow + 200 < System.currentTimeMillis()) {
-                        System.out.print("attempt shoot");
-                        gateway.throwPropaganda(direction);
+                        gateway.throwMusic(direction);
                         prevThrow = System.currentTimeMillis();
                     }
                 }
@@ -122,17 +124,18 @@ public class Commemeism extends Application {
     }
 }
 
-class HandleChanges implements CommemeismGateway.GatewayListener {
-    private WorldPane world;
-    private ScorePane scores;
+// handles changes from the server
+class HandleChanges implements Gateway.GatewayListener {
+    private final WorldPane world;
+    private final ScorePane scores;
     private String handle;
-    private List<ImageView> players = Collections.synchronizedList(new ArrayList<ImageView>());
-    private List<ImageView> plebians = Collections.synchronizedList(new ArrayList<ImageView>());
-    private List<ImageView> propaganda = Collections.synchronizedList(new ArrayList<ImageView>());
-    private List<Shape> walls = Collections.synchronizedList(new ArrayList<Shape>());
-    private List<plebian> plebianObjects = Collections.synchronizedList(new ArrayList<plebian>());
-    private HashMap<Integer, Propaganda> propagandaObjects = new HashMap<>();
-    private HashMap<Integer, propagandist> propagandistObjects = new HashMap<>();
+    private final List<ImageView> players = Collections.synchronizedList(new ArrayList<ImageView>());
+    private final List<ImageView> npc = Collections.synchronizedList(new ArrayList<ImageView>());
+    private final List<ImageView> compositions = Collections.synchronizedList(new ArrayList<ImageView>());
+    private final List<Shape> walls = Collections.synchronizedList(new ArrayList<Shape>());
+    private final List<Npc> npcObjects = Collections.synchronizedList(new ArrayList<Npc>());
+    private final HashMap<Integer, Composition> compositionObjects = new HashMap<>();
+    private final HashMap<Integer, Composer> composerObjects = new HashMap<>();
 
     public HandleChanges(WorldPane world) {
         this.world = world;
@@ -144,33 +147,30 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
     }
 
     private void updateWorld() {
-        world.setShapes(players, plebians, propaganda, walls, scores);
+        world.setShapes(players, npc, compositions, walls, scores);
     }
 
     @Override
     public void onBoxChange(int id, int x, int y) {
-        for (plebian b : plebianObjects) {
-            if (b.id == id)
-                b.move(x, y);
-        }
+        npcObjects.stream().filter(b -> b.id == id).forEachOrdered(b -> b.move(x, y));
     }
 
+    // set up world representation
     @Override
     public void onInitialized(int width, int height, int score0, int score1, Box me) {
-        Box worldEdges = new Box(0, 0, width, height);
         scores.setScores(1, score1);
         scores.setScores(0, score0);
         updateWorld();
     }
 
     @Override
-    public void onBoxesSet(Box[] voters, Box[] walls) {
-        //create plebians from plebian image
-        for (Box b : voters) {
-            plebian p = new plebian(b._id);
-            plebianObjects.add(p);
+    public void onBoxesSet(Box[] npcs, Box[] walls) {
+        //create npc from Npc image
+        for (Box b : npcs) {
+            Npc p = new Npc(b.boxid);
+            npcObjects.add(p);
             p.move(b.getX(), b.getY());
-            plebians.add(p.getFace());
+            npc.add(p.getFace());
         }
         //add base walls to be displayed from Box objects
         for (Box b : walls) {
@@ -180,9 +180,9 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
 
     @Override
     public void onBallChange(int id, int ox, int oy) {
-        //if propaganda with that id exists, edit the propaganda, otherwise create new object
+        //if composition with that id exists, update the composition, otherwise create new object
         boolean contains = false;
-        for (Propaganda p : propagandaObjects.values()) {
+        for (Composition p : compositionObjects.values()) {
             if (p.getId() == id) {
                 p.setX(ox);
                 p.setY(oy);
@@ -192,20 +192,21 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
         }
         if (!contains) {
             //create the object
-            propagandaObjects.put(id, new Propaganda(id, ox, oy));
-            propaganda.add(propagandaObjects.get(id).getShape());
+            compositionObjects.put(id, new Composition(id, ox, oy));
+            compositions.add(compositionObjects.get(id).getShape());
             updateWorld();
         }
     }
 
     @Override
     public void onClientChange(int id, int party, String name, int x, int y, int pCount, boolean enteredFactory) {
+        // adds a player if new, otherwise updates the player's location
         boolean contains = false;
-        if (!propagandistObjects.isEmpty()) {
-            for (propagandist p : propagandistObjects.values()) {
+        if (!composerObjects.isEmpty()) {
+            for (Composer p : composerObjects.values()) {
                 if (p.getID() == id) {
                     p.move(x, y);
-                    p.setParty(party);
+                    p.setPeriod(party);
                     if (p.getName().equals(handle)) {
                         scores.setpCount(pCount);
                     }
@@ -216,8 +217,8 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
         }
 
         if (!contains) {
-            propagandistObjects.put(id, new propagandist(id, party, name, x, y));
-            players.add(propagandistObjects.get(id).getFace());
+            composerObjects.put(id, new Composer(id, party, name, x, y));
+            players.add(composerObjects.get(id).getFace());
             updateWorld();
         }
     }
@@ -232,10 +233,10 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
     @Override
     public void onBallRemove(int id) {
         boolean changed = false;
-        for (Iterator<Map.Entry<Integer, Propaganda>> i = propagandaObjects.entrySet().iterator(); i.hasNext(); ) {
-            Map.Entry<Integer, Propaganda> p = i.next();
+        for (Iterator<Map.Entry<Integer, Composition>> i = compositionObjects.entrySet().iterator(); i.hasNext(); ) {
+            Map.Entry<Integer, Composition> p = i.next();
             if (p.getValue().getId() == id) {
-                propaganda.remove(p.getValue().getShape());
+                compositions.remove(p.getValue().getShape());
                 i.remove();
                 changed = true;
                 break;
@@ -248,8 +249,8 @@ class HandleChanges implements CommemeismGateway.GatewayListener {
     @Override
     public void onClientRemove(int id) {
         boolean changed = false;
-        for (Iterator<Map.Entry<Integer, propagandist>> i = propagandistObjects.entrySet().iterator(); i.hasNext(); ) {
-            Map.Entry<Integer, propagandist> p = i.next();
+        for (Iterator<Map.Entry<Integer, Composer>> i = composerObjects.entrySet().iterator(); i.hasNext(); ) {
+            Map.Entry<Integer, Composer> p = i.next();
             if (p.getValue().getID() == id) {
                 players.remove(p.getValue().getFace());
                 i.remove();

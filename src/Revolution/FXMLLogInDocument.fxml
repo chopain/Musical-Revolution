@@ -7,17 +7,22 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="183.0" prefWidth="373.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Revolution.FXMLLogInDocumentController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="380.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Revolution.FXMLLogInDocumentController">
    <children>
-      <Label layoutX="53.0" layoutY="35.0" text="Handle:" />
-      <Label layoutX="65.0" layoutY="88.0" text="Class:" />
-      <TextField fx:id="handle" layoutX="116.0" layoutY="30.0" prefHeight="26.0" prefWidth="214.0" />
-      <ComboBox fx:id="classes" layoutX="116.0" layoutY="83.0" prefHeight="26.0" prefWidth="214.0" />
-      <ButtonBar layoutX="131.0" layoutY="129.0" prefHeight="40.0" prefWidth="200.0">
+      <Label layoutX="52.0" layoutY="38.0" text="Handle:" />
+      <Label layoutX="64.0" layoutY="73.0" text="Class:" />
+      <TextField fx:id="handle" layoutX="115.0" layoutY="33.0" prefHeight="26.0" prefWidth="214.0" />
+      <ComboBox fx:id="classes" layoutX="115.0" layoutY="68.0" prefHeight="26.0" prefWidth="214.0" />
+      <ButtonBar layoutX="130.0" layoutY="153.0" prefHeight="40.0" prefWidth="200.0">
         <buttons>
             <Button layoutX="125.0" layoutY="17.0" mnemonicParsing="false" onAction="#quit" text="Cancel" />
           <Button mnemonicParsing="false" onAction="#enterGame" text="OK" />
         </buttons>
       </ButtonBar>
+      <Label layoutX="116.0" layoutY="103.0" text="Host:" />
+      <TextField fx:id="host" layoutX="115.0" layoutY="121.0" prefHeight="26.0" prefWidth="148.0" text="127.0.0.1" />
+      <TextField fx:id="port" layoutX="269.0" layoutY="121.0" prefHeight="26.0" prefWidth="61.0" text="8000" />
+      <Label layoutX="269.0" layoutY="103.0" text="Port:" />
+      <Label fx:id="error" layoutX="27.0" layoutY="144.0" prefHeight="59.0" prefWidth="123.0" text="Invalid host:port" textFill="RED" visible="false" />
    </children>
 </AnchorPane>

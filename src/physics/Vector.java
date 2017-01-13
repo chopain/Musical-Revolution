@@ -19,7 +19,7 @@ public class Vector {
         dY /= length;
     }
     
-    public double length()
+    private double length()
     {
         return Math.sqrt(dotProduct(this,this));
     }

@@ -37,7 +37,7 @@ public class Ray {
     }
 
     // Compute the location after the given time span.
-    public Point endPoint(double time) {
+    private Point endPoint(double time) {
         double destX = origin.getX() + v.dX * time * speed;
         double destY = origin.getY() + v.dY * time * speed;
         return new Point(destX, destY);

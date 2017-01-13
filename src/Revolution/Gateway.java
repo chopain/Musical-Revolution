@@ -7,25 +7,30 @@ import java.io.*;
 import java.net.Socket;
 
 
-public class CommemeismGateway extends Thread implements MessageCodes {
-    private final DataInputStream in;
-    private final DataOutputStream out;
+class Gateway extends Thread implements MessageCodes {
+    private DataInputStream in;
+    private DataOutputStream out;
     private final GatewayListener listener;
 
 
     // Establish the connection to the server.
-    public CommemeismGateway(GatewayListener listen) throws Exception {
+    public Gateway(GatewayListener listen) throws Exception {
+
+        listener = listen;
+    }
+
+    /*sends player's name and side to the server
+    and gets the current game layout*/
+    public void setFields(String host, int port, String name, int side) throws IOException {
+
 
         // Create a socket to connect to the server
-        Socket socket = new Socket("143.44.75.183", 8000);
+        Socket socket = new Socket(host, port);
 
 
         out = new DataOutputStream(socket.getOutputStream());
         in = new DataInputStream(socket.getInputStream());
-        listener = listen;
-    }
 
-    public void setFields(String name, int side) throws IOException {
         out.writeUTF(name);
         out.writeInt(side);
 
@@ -36,14 +41,15 @@ public class CommemeismGateway extends Thread implements MessageCodes {
         for (int i = 0; i < walls.length; i++) {
             walls[i] = new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt());
         }
-        Box[] voters = new Box[in.readInt()];
-        for (int i = 0; i < voters.length; i++) {
+
+        Box[] npcs = new Box[in.readInt()];
+        for (int i = 0; i < npcs.length; i++) {
             int id = in.readInt();
-            voters[i] = new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt());
-            voters[i]._id = id;
+            npcs[i] = new Box(in.readInt(), in.readInt(), in.readInt(), in.readInt());
+            npcs[i].boxid = id;
         }
 
-        listener.onBoxesSet(voters, walls);
+        listener.onBoxesSet(npcs, walls);
 
         int players = in.readInt();
         for (int i = 0; i < players; i++)
@@ -54,7 +60,7 @@ public class CommemeismGateway extends Thread implements MessageCodes {
     public interface GatewayListener {
         void onInitialized(int width, int height, int score0, int score1, Box me);
 
-        void onBoxesSet(Box[] voters, Box[] walls);
+        void onBoxesSet(Box[] npcs, Box[] walls);
 
         void onBallChange(int id, int ox, int oy);
 
@@ -141,7 +147,7 @@ public class CommemeismGateway extends Thread implements MessageCodes {
         }
     }
 
-    public synchronized void throwPropaganda(int direction) {
+    public synchronized void throwMusic(int direction) {
         try {
             out.writeInt(CLIENT_THROW);
             out.writeInt(direction);

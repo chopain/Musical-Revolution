@@ -9,13 +9,13 @@ import javafx.scene.text.Text;
 
 import static bases.PixelMeasures.WORLD_WIDTH;
 
-public class ScorePane extends Pane {
-    Rectangle c;
-    Rectangle b;
-    Rectangle cBar;
-    Rectangle bBar;
-    int count = 0;
-    Text pCount = new Text(5, 80, "Propaganda Count: " + count);
+class ScorePane extends Pane {
+    private Rectangle c;
+    private Rectangle b;
+    private Rectangle cBar;
+    private Rectangle bBar;
+    private int count = 0;
+    private Text pCount = new Text(5, 80, "Composition Count: " + count);
 
     public ScorePane() {
         c = RectangleBuilder.create()
@@ -53,7 +53,7 @@ public class ScorePane extends Pane {
 
     public void setpCount(int n) {
         count = n;
-        pCount.setText("Propaganda Count: " + count);
+        pCount.setText("Composition Count: " + count);
     }
 
     public void setScores(int team, int score) {

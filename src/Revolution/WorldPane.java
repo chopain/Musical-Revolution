@@ -1,24 +1,23 @@
 package Revolution;
 
-import bases.BourgeoisBase;
-import bases.CommunistBase;
+import bases.ClassicalBase;
+import bases.AtonalBase;
 import bases.PaperFactoryBase;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Shape;
-import objects.Box;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class WorldPane extends Pane {
+class WorldPane extends Pane {
     private static List<ImageView> bases = Collections.synchronizedList(new ArrayList<ImageView>());
     private static List<Shape> borders = Collections.synchronizedList(new ArrayList<Shape>());
     private static ImageView background = new ImageView(new Image("gamebg.jpg", 1400, 0, true, true));
-    private static CommunistBase cBase = new CommunistBase();
-    private static BourgeoisBase bBase = new BourgeoisBase();
+    private static AtonalBase cBase = new AtonalBase();
+    private static ClassicalBase bBase = new ClassicalBase();
     private static PaperFactoryBase pBase = new PaperFactoryBase();
 
 

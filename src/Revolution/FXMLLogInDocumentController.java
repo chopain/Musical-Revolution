@@ -11,29 +11,17 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.shape.Shape;
-import objects.Propaganda;
-import people.plebian;
-import people.propagandist;
 
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
 public class FXMLLogInDocumentController implements Initializable {
-    private CommemeismGateway gateway;
-    private String selectedClass;
-    private TreeMap<String, propagandist> players;
-    private List<ImageView> propagandists;
-    private List<ImageView> plebs;
-    private List<ImageView> bases;
-    private List<Shape> borders;
-    private List<plebian> plebians;
+    private Gateway gateway;
     private ObservableList<String> types = FXCollections.observableArrayList();
     private HandleChanges listener;
 
@@ -41,21 +29,26 @@ public class FXMLLogInDocumentController implements Initializable {
     private ComboBox<String> classes;
     @FXML
     private TextField handle;
-    private WorldPane world;
+    @FXML
+    private TextField host;
+    @FXML
+    private TextField port;
+    @FXML
+    private Label error;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        types.add("Communist");
-        types.add("Bourgeois");
+        types.add("Atonal");
+        types.add("Classical");
         classes.setItems(types);
-        classes.setValue("Communist");
+        classes.setValue("Classical");
     }
 
     public void quit(ActionEvent event) {
         System.exit(0);
     }
 
-    public void setGateway(CommemeismGateway gate, HandleChanges listener) {
+    public void setGateway(Gateway gate, HandleChanges listener) {
         this.gateway = gate;
         this.listener = listener;
     }
@@ -63,12 +56,18 @@ public class FXMLLogInDocumentController implements Initializable {
     @FXML
     private void enterGame(ActionEvent event) throws IOException {
         String selectedClass = classes.getSelectionModel().getSelectedItem();
-        if(!types.contains(selectedClass) || handle.getText().isEmpty())
+        if (!types.contains(selectedClass) || handle.getText().isEmpty() ||
+                host.getText().isEmpty() || port.getText().isEmpty())
             return;
         System.out.println(handle.getText());
         System.out.println(selectedClass);
         listener.setUser(handle.getText());
-        gateway.setFields(handle.getText(), types.indexOf(selectedClass));
+        try {
+            gateway.setFields(host.getText(), Integer.parseInt(port.getText()), handle.getText(), types.indexOf(selectedClass));
+        } catch (EOFException e) {
+            error.setVisible(true);
+            return;
+        }
         gateway.start();
         handle.getScene().getWindow().hide();
     }

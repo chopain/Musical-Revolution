@@ -1,6 +1,6 @@
 package Revolution;
 
-public interface MessageCodes {
+interface MessageCodes {
     int CLIENT_MOVE = 1;
     int CLIENT_THROW = 2;
     

@@ -8,19 +8,12 @@ import javafx.scene.shape.Line;
  * from the direction vector in pixel coordinate space.
  */
 public class LineSegment {
-    public Point a;
-    public Point b;
+    public final Point a;
+    public final Point b;
 
     public LineSegment(Point a, Point b) {
         this.a = a;
         this.b = b;
-    }
-
-    public void move(double deltaX, double deltaY) {
-        a.setX(a.getX() + deltaX);
-        a.setY(a.getY() + deltaY);
-        b.setX(b.getX() + deltaX);
-        b.setY(b.getY() + deltaY);
     }
 
     public Vector toVector() {
@@ -51,9 +44,9 @@ public class LineSegment {
 
     // Return a Ray that represents the reflection of the
     // other line segment. For this to work correctly,
-    // the other line segment's vector needs to be 
+    // the other line segment's vector needs to be
     // oriented in the opposite direction of our normal.
-    // The returned Ray is positioned at the point of 
+    // The returned Ray is positioned at the point of
     // intersection and is oriented in the reflected direction.
     public Ray reflect(LineSegment other, double speed) {
         // Compute the normal to this segment
